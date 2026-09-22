@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dicionário de Dados — Oficina Alexandre Tricai</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --surface: #ffffff;
+    --text: #1a1d23;
+    --muted: #5b6472;
+    --border: #e2e5ea;
+    --accent: #2c3e50;
+    --accent-fg: #ffffff;
+    --pk: #b8860b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --surface: #1c1f26;
+      --text: #e8eaed;
+      --muted: #9aa4b2;
+      --border: #2c313a;
+      --accent: #3a5674;
+      --accent-fg: #ffffff;
+      --pk: #e0b04a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.5;
+    padding: 32px 16px 80px;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    margin-top: 0;
+    margin-bottom: 28px;
+    font-size: 0.95rem;
+  }
+  .notice {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--pk);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 32px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .entity {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .entity h2 {
+    margin: 0;
+    padding: 14px 18px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-size: 1.05rem;
+    letter-spacing: 0.02em;
+  }
+  .entity h2 small {
+    display: block;
+    font-weight: 400;
+    opacity: 0.85;
+    font-size: 0.78rem;
+    margin-top: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+    vertical-align: top;
+  }
+  th {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.attr { font-family: "Cascadia Code", Consolas, monospace; white-space: nowrap; }
+  td.attr.pk { text-decoration: underline; text-decoration-color: var(--pk); font-weight: 600; }
+  .fk { color: var(--muted); font-size: 0.85em; }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dicionário de Dados Conceitual</h1>
+  <p class="subtitle">Alexandre Tricai — Oficina Mecânica Especializada · Entrega 1 — Modelo Conceitual (DER)</p>
+
+  <div class="notice">
+    Todos os valores de exemplo mencionados nas descrições são fictícios, apenas para ilustrar o tipo de dado — não representam clientes ou veículos reais da oficina.
+  </div>
+
+  <div class="entity">
+    <h2>CLIENTE</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_cliente</td><td>Identificador único do cliente</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">nome</td><td>Nome do cliente ou razão social da empresa de transporte</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">telefone</td><td>Telefone/WhatsApp de contato</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">email</td><td>E-mail do cliente</td><td>Opcional</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>VEICULO</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_veiculo</td><td>Identificador único do veículo</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">placa</td><td>Placa do veículo</td><td>Obrigatória e única</td></tr>
+      <tr><td class="attr">modelo</td><td>Modelo da van (ex.: Sprinter CDI)</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">id_cliente <span class="fk">(FK)</span></td><td>Cliente proprietário do veículo</td><td>Obrigatório (RN01)</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>MECANICO</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_mecanico</td><td>Identificador único do mecânico</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">nome</td><td>Nome do mecânico</td><td>Obrigatório</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>AGENDAMENTO</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_agendamento</td><td>Identificador único do agendamento</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">data</td><td>Data agendada</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">horario</td><td>Horário agendado</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">status</td><td>Confirmado, cancelado, atendido</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">id_cliente <span class="fk">(FK)</span></td><td>Cliente que agendou</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">id_veiculo <span class="fk">(FK)</span></td><td>Veículo a ser atendido</td><td>Obrigatório</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>ORDEM_SERVICO</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_os</td><td>Identificador único da ordem de serviço</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">data</td><td>Data de abertura da OS</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">defeito_relatado</td><td>Defeito informado pelo cliente</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">status</td><td>Situação da OS (aberta, em andamento, concluída)</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">id_veiculo <span class="fk">(FK)</span></td><td>Veículo atendido</td><td>Obrigatório (RN01)</td></tr>
+      <tr><td class="attr">id_mecanico <span class="fk">(FK)</span></td><td>Mecânico responsável</td><td>Obrigatório (RN02)</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>ITEM_SERVICO <small>serviços/itens executados dentro de uma OS</small></h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_item_servico</td><td>Identificador único do item</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">id_os <span class="fk">(FK)</span></td><td>Ordem de serviço à qual pertence</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">descricao</td><td>Descrição do serviço executado</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">valor</td><td>Valor cobrado pelo item</td><td>Obrigatório</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>PECA</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_peca</td><td>Identificador único da peça</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">nome</td><td>Nome/descrição da peça (ex.: pastilha de freio)</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">quantidade_estoque</td><td>Quantidade disponível em estoque</td><td>Deve ser ≥ 0 (RN05)</td></tr>
+      <tr><td class="attr">valor_unitario</td><td>Valor unitário da peça</td><td>Obrigatório</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>ITEM_PECA_OS <small>peças utilizadas em uma ordem de serviço</small></h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_item_peca</td><td>Identificador único do registro</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">id_os <span class="fk">(FK)</span></td><td>Ordem de serviço relacionada</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">id_peca <span class="fk">(FK)</span></td><td>Peça utilizada</td><td>Obrigatório (RN05)</td></tr>
+      <tr><td class="attr">quantidade</td><td>Quantidade da peça utilizada</td><td>Deve ser ≤ quantidade_estoque no momento do uso</td></tr>
+    </table>
+  </div>
+
+  <div class="entity">
+    <h2>PAGAMENTO</h2>
+    <table>
+      <tr><th>Atributo</th><th>Descrição</th><th>Regra de negócio associada</th></tr>
+      <tr><td class="attr pk">id_pagamento</td><td>Identificador único do pagamento</td><td>Obrigatório e único</td></tr>
+      <tr><td class="attr">id_os <span class="fk">(FK)</span></td><td>Ordem de serviço paga</td><td>Obrigatório (RN04)</td></tr>
+      <tr><td class="attr">forma_pagamento</td><td>Dinheiro, PIX, débito, crédito, cheque ou conta assinada</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">valor</td><td>Valor pago</td><td>Obrigatório</td></tr>
+      <tr><td class="attr">numero_parcelas</td><td>Quantidade de parcelas (quando pago no crédito)</td><td>Entre 1 e 4; aplicável somente se forma_pagamento = crédito (RN04)</td></tr>
+      <tr><td class="attr">data_pagamento</td><td>Data em que o pagamento foi registrado</td><td>Obrigatório</td></tr>
+    </table>
+  </div>
+
+  <footer>Entrega 1 — Modelo Conceitual (DER) · Oficina Alexandre Tricai · <a href="README.md" style="color:inherit;">voltar ao README</a></footer>
+</div>
+</body>
+</html>

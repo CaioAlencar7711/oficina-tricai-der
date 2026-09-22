@@ -112,6 +112,8 @@ Regra de prioridade observada: atendimentos agendados têm prioridade; um veícu
 ### Dicionário de Dados Conceitual (Preliminar)
 *(vale 10% — Dimensão Procedimental)*
 
+Versão em HTML (mesma informação, formatada como página): [dicionario-dados.html](dicionario-dados.html)
+
 *(Todos os valores de exemplo abaixo são fictícios, apenas para ilustrar o tipo de dado — não representam clientes ou veículos reais.)*
 
 **Entidade: CLIENTE**
