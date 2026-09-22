@@ -1,0 +1,172 @@
+<svg viewBox="0 0 1620 960" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2c3e50"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1620" height="960" fill="#ffffff"/>
+  <text x="810" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1a1a">DER — Alexandre Tricai Oficina Mecânica Especializada</text>
+
+  <!-- ===== Relationship lines (drawn first, under boxes) ===== -->
+  <g stroke="#2c3e50" stroke-width="2" fill="none">
+    <!-- CLIENTE -> VEICULO -->
+    <line x1="170" y1="180" x2="170" y2="230" marker-end="url(#arrow)"/>
+    <!-- CLIENTE -> AGENDAMENTO -->
+    <line x1="300" y1="110" x2="380" y2="134" marker-end="url(#arrow)"/>
+    <!-- VEICULO -> AGENDAMENTO -->
+    <line x1="230" y1="230" x2="500" y2="228" marker-end="url(#arrow)"/>
+    <!-- VEICULO -> ORDEM_SERVICO -->
+    <line x1="300" y1="300" x2="740" y2="344" marker-end="url(#arrow)"/>
+    <!-- MECANICO -> ORDEM_SERVICO -->
+    <line x1="1300" y1="132" x2="1020" y2="255" marker-end="url(#arrow)"/>
+    <!-- PECA -> ITEM_PECA_OS -->
+    <line x1="1310" y1="390" x2="1345" y2="500" marker-end="url(#arrow)"/>
+    <!-- ORDEM_SERVICO -> ITEM_SERVICO -->
+    <line x1="880" y1="438" x2="870" y2="500" marker-end="url(#arrow)"/>
+    <!-- ORDEM_SERVICO -> ITEM_PECA_OS -->
+    <line x1="1015" y1="438" x2="1085" y2="500" marker-end="url(#arrow)"/>
+    <!-- ORDEM_SERVICO -> PAGAMENTO (routed around item boxes) -->
+    <polyline points="900,438 900,460 1040,460 1040,700 900,700" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Cardinality labels -->
+  <g font-size="14" font-weight="700" fill="#8a4b00">
+    <text x="180" y="198">1</text>
+    <text x="180" y="222">N</text>
+
+    <text x="308" y="105">1</text>
+    <text x="358" y="130">N</text>
+
+    <text x="238" y="222">1</text>
+    <text x="465" y="222">N</text>
+
+    <text x="310" y="292">1</text>
+    <text x="700" y="335">N</text>
+
+    <text x="1278" y="150">1</text>
+    <text x="1030" y="248">N</text>
+
+    <text x="1288" y="405">1</text>
+    <text x="1350" y="490">N</text>
+
+    <text x="890" y="460">1</text>
+    <text x="850" y="495">N</text>
+
+    <text x="1000" y="455">1</text>
+    <text x="1095" y="495">N</text>
+
+    <text x="1048" y="478">1</text>
+    <text x="908" y="690">1</text>
+  </g>
+
+  <!-- ===== Entities ===== -->
+
+  <!-- CLIENTE -->
+  <g>
+    <rect x="40" y="40" width="260" height="140" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="40" y="40" width="260" height="32" fill="#2c3e50"/>
+    <text x="170" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">CLIENTE</text>
+    <text x="52" y="92" font-size="13" text-decoration="underline">id_cliente</text>
+    <text x="52" y="116" font-size="13">nome</text>
+    <text x="52" y="140" font-size="13">telefone</text>
+    <text x="52" y="164" font-size="13">email</text>
+  </g>
+
+  <!-- VEICULO -->
+  <g>
+    <rect x="40" y="230" width="260" height="140" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="40" y="230" width="260" height="32" fill="#2c3e50"/>
+    <text x="170" y="252" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">VEICULO</text>
+    <text x="52" y="282" font-size="13" text-decoration="underline">id_veiculo</text>
+    <text x="52" y="306" font-size="13">placa</text>
+    <text x="52" y="330" font-size="13">modelo</text>
+    <text x="52" y="354" font-size="13">id_cliente (FK)</text>
+  </g>
+
+  <!-- AGENDAMENTO -->
+  <g>
+    <rect x="380" y="40" width="270" height="188" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="380" y="40" width="270" height="32" fill="#2c3e50"/>
+    <text x="515" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">AGENDAMENTO</text>
+    <text x="392" y="92" font-size="13" text-decoration="underline">id_agendamento</text>
+    <text x="392" y="116" font-size="13">data</text>
+    <text x="392" y="140" font-size="13">horario</text>
+    <text x="392" y="164" font-size="13">status</text>
+    <text x="392" y="188" font-size="13">id_cliente (FK)</text>
+    <text x="392" y="212" font-size="13">id_veiculo (FK)</text>
+  </g>
+
+  <!-- MECANICO -->
+  <g>
+    <rect x="1300" y="40" width="260" height="92" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="1300" y="40" width="260" height="32" fill="#2c3e50"/>
+    <text x="1430" y="62" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">MECANICO</text>
+    <text x="1312" y="92" font-size="13" text-decoration="underline">id_mecanico</text>
+    <text x="1312" y="116" font-size="13">nome</text>
+  </g>
+
+  <!-- ORDEM_SERVICO -->
+  <g>
+    <rect x="740" y="250" width="280" height="188" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="740" y="250" width="280" height="32" fill="#2c3e50"/>
+    <text x="880" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">ORDEM_SERVICO</text>
+    <text x="752" y="302" font-size="13" text-decoration="underline">id_os</text>
+    <text x="752" y="326" font-size="13">data</text>
+    <text x="752" y="350" font-size="13">defeito_relatado</text>
+    <text x="752" y="374" font-size="13">status</text>
+    <text x="752" y="398" font-size="13">id_veiculo (FK)</text>
+    <text x="752" y="422" font-size="13">id_mecanico (FK)</text>
+  </g>
+
+  <!-- PECA -->
+  <g>
+    <rect x="1300" y="250" width="260" height="140" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="1300" y="250" width="260" height="32" fill="#2c3e50"/>
+    <text x="1430" y="272" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">PECA</text>
+    <text x="1312" y="302" font-size="13" text-decoration="underline">id_peca</text>
+    <text x="1312" y="326" font-size="13">nome</text>
+    <text x="1312" y="350" font-size="13">quantidade_estoque</text>
+    <text x="1312" y="374" font-size="13">valor_unitario</text>
+  </g>
+
+  <!-- ITEM_SERVICO -->
+  <g>
+    <rect x="740" y="500" width="260" height="140" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="740" y="500" width="260" height="32" fill="#2c3e50"/>
+    <text x="870" y="522" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">ITEM_SERVICO</text>
+    <text x="752" y="552" font-size="13" text-decoration="underline">id_item_servico</text>
+    <text x="752" y="576" font-size="13">id_os (FK)</text>
+    <text x="752" y="600" font-size="13">descricao</text>
+    <text x="752" y="624" font-size="13">valor</text>
+  </g>
+
+  <!-- ITEM_PECA_OS -->
+  <g>
+    <rect x="1080" y="500" width="260" height="140" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="1080" y="500" width="260" height="32" fill="#2c3e50"/>
+    <text x="1210" y="522" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">ITEM_PECA_OS</text>
+    <text x="1092" y="552" font-size="13" text-decoration="underline">id_item_peca</text>
+    <text x="1092" y="576" font-size="13">id_os (FK)</text>
+    <text x="1092" y="600" font-size="13">id_peca (FK)</text>
+    <text x="1092" y="624" font-size="13">quantidade</text>
+  </g>
+
+  <!-- PAGAMENTO -->
+  <g>
+    <rect x="740" y="700" width="280" height="188" fill="#ffffff" stroke="#2c3e50" stroke-width="2"/>
+    <rect x="740" y="700" width="280" height="32" fill="#2c3e50"/>
+    <text x="880" y="722" text-anchor="middle" font-size="15" font-weight="700" fill="#ffffff">PAGAMENTO</text>
+    <text x="752" y="752" font-size="13" text-decoration="underline">id_pagamento</text>
+    <text x="752" y="776" font-size="13">id_os (FK)</text>
+    <text x="752" y="800" font-size="13">forma_pagamento</text>
+    <text x="752" y="824" font-size="13">valor</text>
+    <text x="752" y="848" font-size="13">numero_parcelas</text>
+    <text x="752" y="872" font-size="13">data_pagamento</text>
+  </g>
+
+  <!-- Legend -->
+  <g font-size="13" fill="#333333">
+    <text x="40" y="930">Legenda: atributo sublinhado = chave primária (PK) · "(FK)" = chave estrangeira · números nas linhas = cardinalidade (1 e N, ou 1 e 1 em Ordem de Serviço–Pagamento)</text>
+  </g>
+</svg>

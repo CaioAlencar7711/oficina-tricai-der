@@ -1,0 +1,114 @@
+<svg viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#2c3e50"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1200" height="1400" fill="#ffffff"/>
+  <text x="600" y="26" text-anchor="middle" font-size="22" font-weight="700" fill="#1a1a1a">Fluxograma — Atendimento e Reparo (Oficina Alexandre Tricai)</text>
+
+  <!-- connectors -->
+  <g stroke="#2c3e50" stroke-width="2" fill="none">
+    <line x1="390" y1="120" x2="390" y2="150" marker-end="url(#arrow2)"/>
+    <!-- decision1 Nao -> decision2 -->
+    <line x1="580" y1="225" x2="670" y2="225" marker-end="url(#arrow2)"/>
+    <!-- decision1 Sim -> N5 -->
+    <line x1="390" y1="300" x2="390" y2="415" marker-end="url(#arrow2)"/>
+    <!-- decision2 Nao -> N4 -->
+    <line x1="860" y1="300" x2="860" y2="355" marker-end="url(#arrow2)"/>
+    <!-- decision2 Sim -> bypass lane -> N5 -->
+    <polyline points="1050,225 1080,225 1080,440 580,440" marker-end="url(#arrow2)"/>
+    <!-- N4 -> N5 -->
+    <polyline points="860,445 860,480 580,480" marker-end="url(#arrow2)"/>
+    <!-- N5 -> N6 -->
+    <line x1="390" y1="505" x2="390" y2="535" marker-end="url(#arrow2)"/>
+    <!-- N6 -> decision3 -->
+    <line x1="390" y1="625" x2="390" y2="655" marker-end="url(#arrow2)"/>
+    <!-- decision3 Nao -> N8 -->
+    <line x1="580" y1="730" x2="670" y2="730" marker-end="url(#arrow2)"/>
+    <!-- decision3 Sim -> N9 -->
+    <line x1="390" y1="805" x2="390" y2="815" marker-end="url(#arrow2)"/>
+    <!-- N8 -> N9 -->
+    <polyline points="860,775 860,850 580,850" marker-end="url(#arrow2)"/>
+    <!-- N9 -> N10 -->
+    <line x1="390" y1="905" x2="390" y2="950" marker-end="url(#arrow2)"/>
+    <!-- N10 -> N11 -->
+    <line x1="390" y1="1050" x2="390" y2="1085" marker-end="url(#arrow2)"/>
+    <!-- N11 -> N12 -->
+    <line x1="390" y1="1195" x2="390" y2="1240" marker-end="url(#arrow2)"/>
+  </g>
+
+  <!-- Sim/Nao labels -->
+  <g font-size="13" font-weight="700" fill="#8a4b00">
+    <text x="600" y="215">Não</text>
+    <text x="400" y="360">Sim</text>
+    <text x="880" y="330">Não</text>
+    <text x="960" y="235">Sim</text>
+    <text x="600" y="720">Não</text>
+    <text x="400" y="782">Sim</text>
+  </g>
+
+  <!-- N1 Start -->
+  <ellipse cx="390" cy="75" rx="190" ry="45" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="390" y="70" text-anchor="middle" font-size="13">Cliente relata o defeito (mensagem,</text>
+  <text x="390" y="88" text-anchor="middle" font-size="13">WhatsApp, telefone) ou comparece</text>
+  <text x="390" y="105" text-anchor="middle" font-size="13">presencialmente</text>
+
+  <!-- N2 Decision1 -->
+  <polygon points="390,150 580,225 390,300 200,225" fill="#fdf3e3" stroke="#b8860b" stroke-width="2"/>
+  <text x="390" y="220" text-anchor="middle" font-size="13">Cliente já possui</text>
+  <text x="390" y="238" text-anchor="middle" font-size="13">horário agendado?</text>
+
+  <!-- N3 Decision2 (branch) -->
+  <polygon points="860,150 1050,225 860,300 670,225" fill="#fdf3e3" stroke="#b8860b" stroke-width="2"/>
+  <text x="860" y="220" text-anchor="middle" font-size="13">Há mecânico</text>
+  <text x="860" y="238" text-anchor="middle" font-size="13">disponível agora?</text>
+
+  <!-- N4 Process (branch) -->
+  <rect x="670" y="355" width="380" height="90" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="860" y="395" text-anchor="middle" font-size="13">Cliente agenda um horário</text>
+  <text x="860" y="413" text-anchor="middle" font-size="13">(WhatsApp ou telefone)</text>
+
+  <!-- N5 Process -->
+  <rect x="200" y="415" width="380" height="90" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="390" y="455" text-anchor="middle" font-size="13">Cliente comparece à oficina</text>
+  <text x="390" y="473" text-anchor="middle" font-size="13">no horário</text>
+
+  <!-- N6 Process -->
+  <rect x="200" y="535" width="380" height="90" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="390" y="575" text-anchor="middle" font-size="13">Mecânico disponível realiza</text>
+  <text x="390" y="593" text-anchor="middle" font-size="13">o diagnóstico do defeito</text>
+
+  <!-- N7 Decision3 -->
+  <polygon points="390,655 580,730 390,805 200,730" fill="#fdf3e3" stroke="#b8860b" stroke-width="2"/>
+  <text x="390" y="725" text-anchor="middle" font-size="13">Peça necessária</text>
+  <text x="390" y="743" text-anchor="middle" font-size="13">disponível em estoque?</text>
+
+  <!-- N8 Process (branch) -->
+  <rect x="670" y="685" width="380" height="90" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="860" y="725" text-anchor="middle" font-size="13">Peça é providenciada/comprada</text>
+  <text x="860" y="743" text-anchor="middle" font-size="13">para o serviço</text>
+
+  <!-- N9 Process -->
+  <rect x="200" y="815" width="380" height="90" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="390" y="855" text-anchor="middle" font-size="13">Mecânico executa o reparo</text>
+  <text x="390" y="873" text-anchor="middle" font-size="13">no veículo</text>
+
+  <!-- N10 Process -->
+  <rect x="200" y="950" width="380" height="100" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="390" y="990" text-anchor="middle" font-size="13">Abertura da Ordem de Serviço</text>
+  <text x="390" y="1008" text-anchor="middle" font-size="13">(itens de serviço e peças utilizadas)</text>
+
+  <!-- N11 Process -->
+  <rect x="200" y="1085" width="380" height="110" rx="12" fill="#eef3f8" stroke="#2c3e50" stroke-width="2"/>
+  <text x="390" y="1120" text-anchor="middle" font-size="13">Cliente efetua o pagamento</text>
+  <text x="390" y="1138" text-anchor="middle" font-size="13">(dinheiro, PIX, débito, crédito até 4x,</text>
+  <text x="390" y="1156" text-anchor="middle" font-size="13">cheque ou conta assinada)</text>
+
+  <!-- N12 End -->
+  <ellipse cx="390" cy="1290" rx="190" ry="50" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="390" y="1285" text-anchor="middle" font-size="13">Encerramento do</text>
+  <text x="390" y="1303" text-anchor="middle" font-size="13">atendimento</text>
+
+  <text x="20" y="1380" font-size="13" fill="#333333">Regra observada: atendimentos agendados têm prioridade; um veículo sem agendamento só é atendido de imediato se houver mecânico ocioso (RN03).</text>
+</svg>
