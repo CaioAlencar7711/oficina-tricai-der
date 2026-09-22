@@ -1,3 +1,4 @@
+Feito por: Caio Santos Alencar,Gabriel Tricai,Italo Guilherme, Ezequiel Soares, Davi de Souza.
 # Entrega 1 — Modelo Conceitual (DER)
 ### Modelagem de um sistema de gestão de informações para uma organização de pequeno porte
 
