@@ -263,7 +263,13 @@ Optou-se por não modelar "produtos utilizados" como texto livre (como é feito 
 
 ## Conclusão
 
-*(preencher ao final: síntese do que foi levantado, principais aprendizados do grupo sobre modelagem conceitual, e possíveis trabalhos futuros, como a inclusão de controle de garantia de peças ou relatórios gerenciais de estoque)*
+Este trabalho levantou, a partir de visita de campo à Oficina Alexandre Tricai, os processos, requisitos e regras de negócio de uma oficina mecânica especializada em vans Mercedes-Benz, e propôs um Modelo Conceitual de banco de dados representado pelo DER com 9 entidades (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, ITEM_SERVICO, PECA, ITEM_PECA_OS e PAGAMENTO).
+
+O modelo proposto contribui diretamente para os problemas identificados na oficina: substitui o cadastro repetido em talão de papel por um cadastro centralizado de clientes e veículos, permite consultar o histórico de manutenção por veículo, viabiliza o controle de estoque de peças (hoje inexistente) e organiza os agendamentos em um único lugar, reduzindo o risco de conflito de horários entre mecânicos.
+
+Um dos principais aprendizados do grupo foi perceber a diferença entre um processo formalizado em um formulário e o que de fato acontece na prática: o talão de Ordem de Serviço da oficina não previa PIX nem parcelamento como formas de pagamento, mas isso só foi descoberto porque cruzamos o documento físico com a entrevista feita com o proprietário — o que reforçou a importância de validar cada regra de negócio contra mais de uma fonte de informação. Outra dificuldade foi decidir até que ponto separar entidades: por exemplo, discutimos se AGENDAMENTO deveria ser uma entidade própria ou apenas um status dentro de ORDEM_SERVICO, e optamos por separá-las porque nem todo agendamento vira, de fato, um atendimento. Esse processo mostrou que modelagem conceitual não é só desenhar caixas e setas, mas tomar decisões justificadas sobre como a realidade observada deve ser representada no banco de dados.
+
+Como trabalhos futuros, o modelo pode ser expandido para incluir controle de garantia de peças e serviços, relatórios gerenciais de estoque (peças com baixa rotatividade, previsão de reposição) e controle formal da escala/jornada dos mecânicos — hoje registrados apenas de forma informal. Essas expansões ficam para as próximas etapas do curso, quando o modelo conceitual evoluirá para os modelos lógico e físico do banco de dados.
 
 ## Referências Bibliográficas
 
