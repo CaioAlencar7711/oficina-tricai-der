@@ -1,317 +1,482 @@
-Feito por: Caio Santos Alencar,Gabriel Tricai,Italo Guilherme, Ezequiel Soares, Davi de Souza.
-# Entrega 1 — Modelo Conceitual (DER)
-### Modelagem de um sistema de gestão de informações para uma organização de pequeno porte
+# Oficina Mecânica Alexandre Tricai — Modelagem de Banco de Dados
+
+**Entrega 2 — Do modelo ao banco** · MBD 2026-2 · Terça Noite · Grupo 1
+
+## Integrantes
+
+| Nome completo | RGM | Usuário no GitHub |
+|---|---|---|
+| Caio Santos Alencar | 47052830 | CaioAlencar7711 |
+| Gabriel Tricai  | 47142014 | [PREENCHER] |
+| Italo Guilherme  | 47189771 | [PREENCHER] |
+| Ezequiel Soares | 47205521 | [PREENCHER] |
+| Davi de Souza | 47169826 | [PREENCHER] |
+
+## Ferramentas e artefatos
+
+| Item | Onde |
+|---|---|
+| Software de modelagem (DER e lógico) | brModelo Web — [conceitual](https://app.brmodeloweb.com/conceptual/6ada69d9db66b4314c898c05) e [lógico](https://app.brmodeloweb.com/logic/6aee671423e97e414aac78e5) |
+| SGBD | MySQL 8 |
+| DER conceitual revisado | [`diagramas/der-oficina-tricai.png`](diagramas/der-oficina-tricai.png) |
+| Modelo lógico | [`diagramas/modelo-logico-oficina-tricai.png`](diagramas/modelo-logico-oficina-tricai.png) |
+| Dicionário de dados | [`dicionario-dados.html`](dicionario-dados.html) |
+| Levantamento | [`levantamento.md`](levantamento.md) |
+| Script SQL e massa de dados | [`docs/`](docs/) [PREENCHER nome do arquivo `.sql`] |
 
 ---
 
-# Título
-Modelagem de Banco de Dados para a Oficina Mecânica Alexandre Tricai — Especializada em Vans Mercedes-Benz Sprinter CDI
+## 1. Relatório Técnico Final
 
-## Introdução
+### 1.1 Revisão do Modelo Conceitual
 
-A Oficina Mecânica Alexandre Tricai é uma oficina de pequeno porte, localizada em Suzano-SP, especializada na manutenção de vans Mercedes-Benz (linha Sprinter CDI), atendendo principalmente empresas de transporte de passageiros e fretamento. Atualmente a oficina não utiliza nenhum sistema de informação: o cadastro de clientes é feito manualmente a cada nova ordem de serviço em talão de papel, o controle de estoque de peças é mantido apenas pela organização física nas prateleiras (sem registro de quantidades), e os agendamentos são combinados informalmente por WhatsApp ou telefone, sem nenhum registro central.
+#### Introdução
+A Oficina Mecânica Alexandre Tricai é uma oficina de pequeno porte em Suzano-SP, especializada na manutenção de vans Mercedes-Benz (linha Sprinter CDI), atendendo principalmente empresas de transporte de passageiros e fretamento. A oficina não usa nenhum sistema de informação: o cadastro de clientes é refeito a cada ordem de serviço em talão de papel, o estoque de peças é controlado apenas pela organização física nas prateleiras (sem registro de quantidades), os agendamentos são combinados por WhatsApp ou telefone e as compras de peças não são registradas formalmente.
 
-**Objetivo:** este trabalho tem como objetivo levantar os processos, requisitos e regras de negócio da oficina e propor um Modelo Conceitual de banco de dados — representado por um Diagrama Entidade-Relacionamento (DER) — capaz de organizar o cadastro de clientes e veículos, as ordens de serviço, o controle de estoque de peças, os agendamentos e os pagamentos.
+**Objetivo:** implementar o banco de dados completo que sustenta a operação da oficina, partindo do modelo conceitual revisado da Entrega 1, passando pelo modelo lógico normalizado, até o script SQL em MySQL com consultas gerenciais e de auditoria.
 
-**Delimitação:** o escopo desta entrega é conceitual. Não serão tratados aqui o projeto físico do banco (tipos de dados, índices, SQL) nem a implementação de um sistema — apenas o levantamento de requisitos, regras de negócio e a modelagem conceitual (entidades, atributos, relacionamentos e cardinalidades).
+#### Caracterização da Organização
 
-## Desenvolvimento
+- **Nome e natureza:** Alexandre Tricai - Oficina Mecânica Especializada, empresa com fins lucrativos, CNPJ 14.855.257/0001-30.
+- **Vínculo do grupo:** Gabriel Tricai, integrante do grupo, é filho de Alexandre Tricai, proprietário da oficina. Esse vínculo familiar facilitou o contato com o responsável pelo estabelecimento e a realização da entrevista para o levantamento de informações.
+- **Porte (números):**
+  - Pessoas: 4 a 5 envolvidas (proprietário e mecânicos), todas sem registro em sistema de RH.
+  - Atendimentos: [PREENCHER: nº de OS por semana]
+  - Clientes ativos: [PREENCHER] · Veículos atendidos por mês: [PREENCHER]
+  - Peças mantidas em estoque: [PREENCHER nº de itens] · Fornecedor principal: Rodobens.
+- **Escopo:** todos os dados da operação da oficina: clientes, veículos, mecânicos, agendamentos, ordens de serviço, serviços, peças, compras, fornecedores, pagamentos e notas fiscais.
+- **Responsável que atendeu o grupo:** Alexandre Tricai, proprietário da oficina. Telefone: (11) 99778-1502.
 
-### Caracterização da Organização
-*(vale 7,5% — Dimensão Conceitual)*
+**Problemas identificados e como o modelo os resolve**
 
-- **Nome e natureza da organização:** Alexandre Tricai - Oficina Mecânica Especializada, empresa com fins lucrativos, CNPJ 14.855.257/0001-30, especializada em manutenção de vans Mercedes-Benz Sprinter CDI.
-- **Contexto e porte:** oficina de pequeno porte, com fins lucrativos. Conta com 4 a 5 pessoas envolvidas (proprietário e mecânicos), todos registrados de forma informal, sem sistema de RH. O volume de atividade é de atendimentos diários de diagnóstico, revisão e reparo de vans, com emissão de uma ordem de serviço por atendimento.
-- **Problemas e necessidades identificados:** a oficina não possui nenhum sistema informatizado. O cadastro de cliente e veículo é refeito manualmente em talão de papel a cada nova ordem de serviço, não havendo histórico consultável de manutenções por cliente ou por veículo. O estoque de peças (filtros, pastilhas de freio, componentes de motor, etc.) é organizado fisicamente em prateleiras, mas sem controle de quantidade ou registro de saída por serviço. Os agendamentos são combinados por WhatsApp ou telefone, sem registro único, o que gera risco de conflito de horários entre mecânicos.
-- **Justificativa da escolha:** a oficina foi escolhida por ser uma organização real, de porte pequeno e de fácil acesso para o grupo, com processos claros o suficiente para gerar entidades e regras de negócio relevantes (clientes, veículos, ordens de serviço, peças, pagamentos, agendamentos), sem a complexidade de uma operação de grande porte.
-- **Evidências da organização:**
-  - Endereço completo: Av. Miguel Badra, 782 — Cidade Boa Vista, Suzano/SP.
-  - Contato: (11) 99778-1502 (WhatsApp/celular) e (11) 4752-6266 (fixo).
-  - Foto do modelo físico de Ordem de Serviço utilizado atualmente, com nome da oficina, CNPJ e endereço: [`evidencias/ordem-servico-modelo.jpg`](evidencias/ordem-servico-modelo.jpg)
-  - Foto do letreiro/mural externo da oficina, indicando a especialização em Sprinter CDI: [`evidencias/fachada-letreiro.jpg`](evidencias/fachada-letreiro.jpg)
-  - Foto da visita de campo do grupo com o proprietário, dentro da oficina: [`evidencias/equipe-oficina.jpg`](evidencias/equipe-oficina.jpg)
-  - Foto do estoque de peças organizado nas prateleiras: [`evidencias/estoque-pecas.jpg`](evidencias/estoque-pecas.jpg)
-  - Foto do galpão com veículos de clientes em manutenção: [`evidencias/galpao-vans-clientes.jpg`](evidencias/galpao-vans-clientes.jpg)
+| Código | Problema | Resolvido por |
+|---|---|---|
+| P1 | Cadastro de cliente e veículo refeito em papel a cada OS | CLIENTE, VEICULO |
+| P2 | Sem histórico consultável de manutenções por cliente ou veículo | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA |
+| P3 | Estoque sem controle de quantidade nem baixa por serviço | PECA, UTILIZA, CONTEM |
+| P4 | Agendamento por WhatsApp/telefone, sem registro central, com risco de conflito de horários entre mecânicos | AGENDAMENTO, MECANICO |
+| P5 | Compras de peças e fornecedores sem registro formal | FORNECEDOR, COMPRA, CONTEM |
+| P6 | Retorno do veículo por problema no mesmo serviço sem vínculo com a OS original [CONFIRMAR com a oficina] | RETORNO_DE |
+
+**Evidências**
+
+- Endereço: Av. Miguel Badra, 782 — Cidade Boa Vista, Suzano/SP. Contato: (11) 99778-1502 e (11) 4752-6266.
+- **Comprovação da existência da oficina:** [Oficina Mecânica Alexandre Tricai — Google Maps](https://maps.app.goo.gl/aE3fp3jGJKC6SqfDA)
+- Foto do modelo físico de Ordem de Serviço: [`evidencias/ordem-servico-modelo.jpg`](evidencias/ordem-servico-modelo.jpg)
+- Foto do letreiro externo: [`evidencias/fachada-letreiro.jpg`](evidencias/fachada-letreiro.jpg)
+- Foto da visita do grupo com o proprietário: [`evidencias/equipe-oficina.jpg`](evidencias/equipe-oficina.jpg)
+- Foto do estoque de peças: [`evidencias/estoque-pecas.jpg`](evidencias/estoque-pecas.jpg)
+- Foto do galpão com veículos em manutenção: [`evidencias/galpao-vans-clientes.jpg`](evidencias/galpao-vans-clientes.jpg)
+
+   #### Levantamento de Informações
+
+Texto completo em [`levantamento.md`](levantamento.md). Resumo:
+
+- **Entrevista:** realizada por Gabriel Tricai com Alexandre Tricai, responsável pela oficina, em 04/11/2026. A entrevista teve como objetivo compreender a rotina do estabelecimento, os processos de atendimento e as práticas de controle de peças e estoque.
+- **Informações obtidas na entrevista:** Alexandre Tricai relatou que a oficina normalmente adquire peças na Rodobens. Apenas itens de revisão, como filtros de óleo, filtros de ar, filtros de combustível e pastilhas de freio, são mantidos em estoque. As demais peças são compradas conforme a necessidade de cada veículo, sendo os custos repassados ao cliente. A oficina emite nota fiscal, mas não mantém registros formais das compras e do estoque.
+
 
 ---
 
-### Processos de Negócio
-*(vale 10% — Dimensão Procedimental)*
+	#### Processos de Negócio
 
-- **Principais processos mapeados:**
-  - Cadastro de cliente e veículo (feito no momento da abertura da ordem de serviço).
-  - Agendamento de horário de atendimento.
-  - Atendimento e diagnóstico do defeito.
-  - Execução do reparo/serviço, com uso de peças do estoque.
-  - Abertura e fechamento da Ordem de Serviço.
-  - Pagamento do serviço.
+| # | Processo | Hoje | Proposto pelo sistema |
+|---|---|---|---|
+| 1 | Cadastro de cliente e veículo | Refeito em talão de papel a cada OS | Cadastro único, reaproveitado em todas as OS |
+| 2 | Agendamento | WhatsApp/telefone, sem registro | Agendamento registrado com veículo e mecânico |
+| 3 | Atendimento e diagnóstico | Mecânico disponível diagnostica | Igual, com OS ligada ao agendamento quando houver |
+| 4 | Execução do reparo | Usa peça do estoque ou providencia a peça | Peça de estoque dá baixa na OS; peça sob demanda é comprada, registrada e usada |
+| 5 | Abertura e fechamento da OS | Talão de papel com cliente, veículo, itens e produtos | OS registra cliente (via veículo), mecânico, serviços e peças |
+| 6 | Pagamento | Dinheiro, PIX, débito, crédito (até 4x), cheque ou conta assinada | Pagamento registrado e ligado à OS |
+| 7 | Emissão de nota fiscal | A oficina emite a nota (fora do sistema) | Número da nota registrado na OS |
+| 8 | Compra de peças e recebimento | Compra normalmente na Rodobens, sem registro | Cadastro de fornecedor, registro da compra e entrada no estoque *(melhoria proposta)* |
+| 9 | Controle de estoque | Só itens de revisão e pastilhas ficam em estoque, sem controle de quantidade | Saldo por peça, baixa por OS e alerta abaixo do mínimo *(melhoria proposta)* |
+| 10 | Garantia e retorno | Consulta às notas fiscais para identificar os serviços realizados anteriormente no veículo | OS de retorno vinculada à OS original |
 
-**Fluxo textual do processo principal (Atendimento e Reparo):**
+**Fluxo principal (atendimento e reparo):**
 
-```text
+```
 Cliente relata o defeito (mensagem/WhatsApp/telefone) ou comparece presencialmente
 ↓
 Caso haja contato prévio → cliente agenda um horário
-  (caso apareça sem agendamento e haja mecânico disponível → é atendido na hora)
+  (sem agendamento e com mecânico disponível → atendido na hora)
 ↓
-Cliente comparece à oficina no horário combinado
-↓
-Mecânico disponível realiza o diagnóstico do defeito
+Mecânico realiza o diagnóstico
 ↓
 Mecânico executa o reparo
-  (utiliza peça do estoque, ou a peça é providenciada para o serviço)
+  (peça de estoque, ou peça comprada conforme a necessidade do veículo)
 ↓
-Abertura da Ordem de Serviço (registra cliente, veículo, itens/serviços executados e produtos utilizados)
+Abertura da Ordem de Serviço (cliente, veículo, serviços, peças)
 ↓
-Cliente efetua o pagamento (dinheiro, PIX, cartão de débito, cartão de crédito — podendo ser parcelado em até 4x —, cheque ou conta assinada)
+Pagamento (dinheiro, PIX, débito, crédito em até 4x, cheque ou conta assinada)
+↓
+Emissão da nota fiscal
 ```
 
-Regra de prioridade observada: atendimentos agendados têm prioridade; um veículo sem agendamento prévio só é atendido imediatamente se houver mecânico ocioso no momento.
+[![Fluxograma do atendimento e reparo](diagramas/fluxograma-atendimento.svg)](diagramas/fluxograma-atendimento.svg)
 
-- **Fluxograma:**
+**Processos fora do escopo, com justificativa**
 
-![Fluxograma do atendimento e reparo](diagramas/fluxograma-atendimento.svg)
-
----
-
-### Requisitos do Sistema
-*(esta seção e a Seção 4 "Regras de Negócio" DIVIDEM 7,5% na dimensão conceitual — juntas valem 7,5%, não 7,5% cada — + 4% exclusivos desta seção na organização/documentação)*
-
-#### Requisitos Funcionais
-- RF01 — O sistema deve permitir cadastrar clientes e seus veículos.
-- RF02 — O sistema deve permitir registrar ordens de serviço, vinculando cliente, veículo, mecânico responsável, itens de serviço executados e peças utilizadas.
-- RF03 — O sistema deve permitir agendar horários de atendimento.
-- RF04 — O sistema deve permitir consultar a disponibilidade de horários e de mecânicos.
-- RF05 — O sistema deve permitir registrar o pagamento de uma ordem de serviço, com forma de pagamento (dinheiro, PIX, débito, crédito — parcelável em até 4x —, cheque ou conta assinada).
-- RF06 — O sistema deve permitir controlar o estoque de peças (entrada e saída por ordem de serviço).
-- RF07 — O sistema deve permitir consultar o histórico de ordens de serviço de um cliente ou de um veículo específico.
-
-#### Requisitos Não Funcionais
-- RNF01 — O sistema deve restringir o acesso por usuário e senha.
-- RNF02 — O sistema deve proteger os dados cadastrais dos clientes.
-- RNF03 — O sistema deve ter interface simples e objetiva, considerando que a equipe não tem familiaridade prévia com sistemas informatizados.
-- RNF04 — As consultas (histórico de veículo, disponibilidade de horário, estoque) devem responder rapidamente, mesmo em dispositivos simples (celular/tablet).
+- **Orçamento e aprovação prévia:** não foram modelados como entidades independentes, pois, conforme o levantamento realizado com Alexandre Tricai, o valor do serviço é informado após o diagnóstico do veículo. O modelo registra os serviços realizados e seus respectivos valores na ordem de serviço. Caso a oficina passe a utilizar orçamentos formais, o banco poderá ser ampliado com uma entidade ORCAMENTO vinculada à ORDEM_SERVICO.
+- **Financeiro (contas a pagar e caixa):** o controle detalhado de contas a pagar e fluxo de caixa não foi incluído no escopo desta etapa. O modelo contempla o registro das compras de peças e dos pagamentos realizados pelos clientes, permitindo uma futura expansão para o gerenciamento financeiro completo da oficina.
 
 ---
 
-### Regras de Negócio
-*(esta seção DIVIDE com a Seção 3 "Requisitos do Sistema" os mesmos 7,5% da dimensão conceitual — juntas valem 7,5%, não 7,5% cada — + 4% exclusivos desta seção na documentação. "Regras de negócio" é o termo técnico usado em modelagem de dados para as regras de funcionamento de qualquer organização, com ou sem fins lucrativos)*
+## 3. Requisitos do sistema
 
-- **Regras operacionais:**
-  - RN01 — Uma ordem de serviço deve estar associada a exatamente um cliente e um veículo.
-  - RN02 — Um mecânico não pode estar alocado a dois atendimentos no mesmo horário.
-  - RN03 — Um atendimento agendado tem prioridade sobre um atendimento sem agendamento prévio, salvo se houver mecânico ocioso no momento.
-  - RN04 — Um pagamento deve estar relacionado a exatamente uma ordem de serviço e pode ser dividido em até 4 parcelas quando a forma de pagamento for cartão de crédito.
-  - RN05 — Uma peça só pode ser utilizada em uma ordem de serviço se houver quantidade disponível em estoque.
-  - RN06 — Um veículo pode ter várias ordens de serviço ao longo do tempo, compondo seu histórico de manutenção.
-- **Restrições organizacionais:**
-  - A oficina atende exclusivamente vans Mercedes-Benz (linha Sprinter CDI), o que limita o escopo do cadastro de veículos a essa marca/linha.
-  - Os mecânicos são registrados de forma informal (sem vínculo formalizado em sistema de RH), o que é suficiente para o escopo deste modelo, mas limita, por ora, controles como jornada de trabalho ou escala.
+	#### Requisitos do Sistema
 
----
+- **RF01** — Cadastrar clientes (nome ou razão social, `cpf_cnpj`, telefone, e-mail e endereço com logradouro, número, bairro e CEP) e seus veículos (placa, modelo, ano e cliente proprietário).
+- **RF02** — Registrar ordem de serviço com data de abertura, descrição do problema, status, veículo, mecânico responsável, agendamento de origem (opcional), data de fechamento, valor total e número da nota fiscal.
+- **RF03** — Agendar atendimento com data, horário, status, veículo e mecânico.
+- **RF04** — Consultar a disponibilidade de horários e de mecânicos.
+- **RF05** — Registrar o pagamento de uma OS com data, valor, forma de pagamento (dinheiro, PIX, débito, crédito, cheque ou conta assinada) e número de parcelas (crédito, de 1 a 4).
+- **RF06** — Controlar o estoque de peças (entrada por compra recebida e saída por OS).
+- **RF07** — Consultar o histórico de OS de um cliente ou de um veículo.
+- **RF08** *(proposto)* — Cadastrar fornecedor com nome, CNPJ e telefone.
+- **RF09** *(proposto)* — Registrar compra com fornecedor, data da compra, valor total e, por peça, quantidade e valor unitário.
+- **RF10** *(proposto)* — Registrar a data de recebimento da compra e dar entrada no estoque.
+- **RF11** — Cadastrar peça com nome, quantidade em estoque, estoque mínimo, valor de venda e indicação de se é mantida em estoque.
+- **RF12** — Cadastrar serviço com descrição e valor padrão.
+- **RF13** — Registrar na OS os serviços (com valor cobrado) e as peças (com quantidade e valor unitário praticado).
+- **RF14** — Listar as peças mantidas em estoque que estão abaixo do estoque mínimo.
+- **RF15** — Registrar OS de retorno vinculada à OS original.
 
-### Dicionário de Dados Conceitual (Preliminar)
-*(vale 10% — Dimensão Procedimental)*
+	##### Requisitos Não Funcionais
 
-Versão em HTML (mesma informação, formatada como página): [dicionario-dados.html](dicionario-dados.html)
-
-*(Todos os valores de exemplo abaixo são fictícios, apenas para ilustrar o tipo de dado — não representam clientes ou veículos reais.)*
-
-**Entidade: CLIENTE**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_cliente | Identificador único do cliente | Obrigatório e único |
-| nome | Nome do cliente ou razão social da empresa de transporte | Obrigatório |
-| telefone | Telefone/WhatsApp de contato | Obrigatório |
-| email | E-mail do cliente | Opcional |
-
-**Entidade: VEICULO**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_veiculo | Identificador único do veículo | Obrigatório e único |
-| placa | Placa do veículo | Obrigatória e única |
-| modelo | Modelo da van (ex.: Sprinter CDI) | Obrigatório |
-| id_cliente | Cliente proprietário do veículo | Obrigatório (RN01) |
-
-**Entidade: MECANICO**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_mecanico | Identificador único do mecânico | Obrigatório e único |
-| nome | Nome do mecânico | Obrigatório |
-
-**Entidade: ORDEM_SERVICO**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_os | Identificador único da ordem de serviço | Obrigatório e único |
-| data | Data de abertura da OS | Obrigatório |
-| defeito_relatado | Defeito informado pelo cliente | Obrigatório |
-| status | Situação da OS (aberta, em andamento, concluída) | Obrigatório |
-| id_veiculo | Veículo atendido | Obrigatório (RN01) |
-| id_mecanico | Mecânico responsável | Obrigatório (RN02) |
-
-**Entidade: ITEM_SERVICO** (serviços/itens executados dentro de uma OS)
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_item_servico | Identificador único do item | Obrigatório e único |
-| id_os | Ordem de serviço à qual pertence | Obrigatório |
-| descricao | Descrição do serviço executado | Obrigatório |
-| valor | Valor cobrado pelo item | Obrigatório |
-
-**Entidade: PECA**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_peca | Identificador único da peça | Obrigatório e único |
-| nome | Nome/descrição da peça (ex.: pastilha de freio) | Obrigatório |
-| quantidade_estoque | Quantidade disponível em estoque | Deve ser ≥ 0 (RN05) |
-| valor_unitario | Valor unitário da peça | Obrigatório |
-
-**Entidade: ITEM_PECA_OS** (peças utilizadas em uma ordem de serviço)
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_item_peca | Identificador único do registro | Obrigatório e único |
-| id_os | Ordem de serviço relacionada | Obrigatório |
-| id_peca | Peça utilizada | Obrigatório (RN05) |
-| quantidade | Quantidade da peça utilizada | Deve ser ≤ quantidade_estoque no momento do uso |
-
-**Entidade: PAGAMENTO**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_pagamento | Identificador único do pagamento | Obrigatório e único |
-| id_os | Ordem de serviço paga | Obrigatório (RN04) |
-| forma_pagamento | Dinheiro, PIX, débito, crédito, cheque ou conta assinada | Obrigatório |
-| valor | Valor pago | Obrigatório |
-| numero_parcelas | Quantidade de parcelas (quando pago no crédito) | Entre 1 e 4; aplicável somente se forma_pagamento = crédito (RN04) |
-| data_pagamento | Data em que o pagamento foi registrado | Obrigatório |
-
-**Entidade: AGENDAMENTO**
-
-| Atributo | Descrição | Regra de negócio associada |
-|----------|-----------|------------------------------|
-| id_agendamento | Identificador único do agendamento | Obrigatório e único |
-| data | Data agendada | Obrigatório |
-| horario | Horário agendado | Obrigatório |
-| status | Confirmado, cancelado, atendido | Obrigatório |
-| id_cliente | Cliente que agendou | Obrigatório |
-| id_veiculo | Veículo a ser atendido | Obrigatório |
+- **RNF01** — Acesso restrito por usuário e senha.
+- **RNF02** — Proteção dos dados pessoais dos clientes (ver RN18).
+- **RNF03** — Interface simples, considerando que a equipe não tem familiaridade com sistemas.
+- **RNF04** — Consultas rápidas, inclusive em celular ou tablet.
 
 ---
 
-### Modelagem Conceitual (Entidades, Atributos, Relacionamentos)
-*(vale 7,5% na dimensão conceitual)*
+	#### Regras de Negócio
 
-- **Entidades reconhecidas:** CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, ITEM_SERVICO, PECA, ITEM_PECA_OS, PAGAMENTO.
-  - CLIENTE e VEICULO foram separados porque um cliente pode possuir mais de um veículo, e o histórico de manutenção pertence ao veículo, não à pessoa.
-  - AGENDAMENTO foi separado de ORDEM_SERVICO porque o agendamento representa uma intenção de atendimento (pode ser cancelado antes de o serviço ocorrer), enquanto a ORDEM_SERVICO só existe quando o atendimento de fato acontece.
-  - ITEM_SERVICO e ITEM_PECA_OS são entidades associativas: permitem que uma OS tenha múltiplos serviços e múltiplas peças, com controle individual de valor e quantidade.
-- **Atributos e classificações:** detalhados no Dicionário de Dados Conceitual acima.
-- **Relacionamentos pertinentes:**
-  - CLIENTE (1) — (N) VEICULO
-  - CLIENTE (1) — (N) AGENDAMENTO
-  - VEICULO (1) — (N) AGENDAMENTO
-  - VEICULO (1) — (N) ORDEM_SERVICO
-  - MECANICO (1) — (N) ORDEM_SERVICO
-  - ORDEM_SERVICO (1) — (N) ITEM_SERVICO
-  - ORDEM_SERVICO (1) — (N) ITEM_PECA_OS
-  - PECA (1) — (N) ITEM_PECA_OS
-  - ORDEM_SERVICO (1) — (1) PAGAMENTO
-- **Restrições e políticas organizacionais aplicadas ao modelo:** cadastro de veículo restrito à marca/linha atendida pela oficina (Mercedes-Benz Sprinter CDI); uso de peça condicionado à disponibilidade em estoque (RN05); mecânico não pode ter dois atendimentos simultâneos (RN02).
+- **RN01** — Uma OS está associada a exatamente um veículo e, por meio dele, a um único cliente.
+- **RN02** — Um mecânico não pode ter dois agendamentos no mesmo horário.
+- **RN03** — Atendimento agendado tem prioridade; veículo sem agendamento só é atendido na hora se houver mecânico ocioso.
+- **RN04** — Um pagamento pertence a exatamente uma OS. O número de parcelas vai de 1 a 4 e só se aplica quando a forma de pagamento é crédito.
+- **RN05** — Peça mantida em estoque (filtros de óleo, ar e combustível e pastilha de freio) só pode ser usada na OS se houver quantidade disponível. As demais peças são compradas sob demanda após o diagnóstico, registradas em COMPRA e então usadas na OS.
+- **RN06** — Um veículo pode ter várias OS ao longo do tempo, formando seu histórico de manutenção.
+- **RN07** — Cada OS tem exatamente um mecânico responsável.
+- **RN08** — O `valor_total` da OS é a soma dos valores cobrados nos serviços mais a soma de (quantidade × valor unitário) das peças.
+- **RN09** — O valor unitário da peça na OS é o praticado no dia e não muda se o preço da peça mudar depois.
+- **RN10** — Agendamento cancelado ou com não comparecimento não gera OS. Cada agendamento gera no máximo uma OS.
+- **RN11** — Todo agendamento refere-se a exatamente um veículo e um mecânico.
+- **RN12** — Conta assinada só para clientes autorizados pelo proprietário e com prazo definido; a OS fica sem pagamento registrado até a quitação. [CONFIRMAR condições]
+- **RN13** — A peça comprada pela oficina para o reparo é cobrada do cliente na OS.
+- **RN14** — Serviços e peças têm garantia legal de 90 dias (CDC, art. 26). Retorno dentro do prazo gera nova OS vinculada à original. [CONFIRMAR prazo praticado]
+- **RN15** *(proposto)* — Compra só de fornecedor cadastrado; a entrada no estoque só ocorre após conferir quantidade e valor.
+- **RN16** *(proposto)* — Toda compra tem ao menos uma peça.
+- **RN17** — A oficina emite nota fiscal de serviços e peças (informado por Gabriel Tricai em [PREENCHER data]). O número da nota é registrado na OS e é único. A emissão do documento ocorre fora do sistema. [CONFIRMAR: nota emitida para toda OS ou só quando o cliente pede?]
+- **RN18** — Os dados pessoais dos clientes (nome, `cpf_cnpj`, telefone, e-mail, endereço) são usados só para atendimento e cobrança, com acesso restrito. Correção ou exclusão a pedido do titular, ressalvada a guarda fiscal obrigatória (LGPD).
+- **RN19** — Uma ordem de serviço de retorno deve estar vinculada a uma OS original do mesmo veículo. Cada OS original pode gerar no máximo um retorno.
 
----
+**Restrições organizacionais**
 
-### Diagrama Entidade-Relacionamento (DER)
-*(vale 20% — é o item de maior peso da entrega)*
-
-![DER da Oficina Alexandre Tricai](diagramas/der-oficina-tricai.svg)
-
-- O diagrama representa as 9 entidades (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, ITEM_SERVICO, PECA, ITEM_PECA_OS, PAGAMENTO), seus atributos (com PK sublinhada e FK indicada), e os 9 relacionamentos com cardinalidades 1:N (e 1:1 entre ORDEM_SERVICO e PAGAMENTO) descritos na seção de Modelagem Conceitual.
+- A oficina atende exclusivamente vans Mercedes-Benz Sprinter CDI, por isso o veículo não tem o atributo marca.
+- Os mecânicos são registrados de forma informal, o que limita controles como jornada e escala.
 
 ---
 
-### Justificativa Técnica
-*(vale 7,5% — sozinho, é o subcritério de maior peso dentro da Dimensão Conceitual)*
+	#### DER Conceitual Revisado
 
-O modelo separa **CLIENTE** de **VEICULO** porque, na prática observada na oficina, o histórico de manutenção é sempre consultado por veículo (placa/modelo), e um mesmo cliente (por exemplo, uma empresa de fretamento) pode ter várias vans atendidas na oficina. Caso os dados do veículo fossem armazenados diretamente em CLIENTE, seria impossível representar múltiplos veículos por cliente sem repetição de dados.
+![DER conceitual da Oficina Alexandre Tricai](diagramas/der-oficina-tricai.png)
 
-A entidade **AGENDAMENTO** foi mantida separada de **ORDEM_SERVICO** porque nem todo agendamento se converte em atendimento (pode ser cancelado, ou o cliente pode não comparecer), e a regra de prioridade de atendimento (RN03) depende de existir um registro de agendamento independente do registro do serviço efetivamente executado.
+Feito no **brModelo Web**. Em amarelo, as estruturas propostas como melhoria (FORNECEDOR, COMPRA e CONTEM): a oficina compra peças, mas não registra as compras.
 
-As entidades **ITEM_SERVICO** e **ITEM_PECA_OS** foram criadas como entidades associativas em vez de atributos multivalorados dentro de ORDEM_SERVICO, pois uma ordem de serviço real (conforme o talão físico usado hoje pela oficina) pode conter múltiplos itens de serviço e múltiplas peças, cada um com seu próprio valor e quantidade — o que exige uma relação um-para-muitos, e não um único campo de texto.
+O DER tem **10 entidades** (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, PECA, SERVICO, PAGAMENTO, FORNECEDOR, COMPRA) e **3 entidades associativas** (UTILIZA, REALIZA, CONTEM).
 
-A entidade **PECA** foi separada de ORDEM_SERVICO para permitir o controle de estoque (RF06, RN05) de forma centralizada, já que a mesma peça pode ser usada em diversas ordens de serviço ao longo do tempo.
+**Convenção de cardinalidade adotada (brModelo):** o par (mín,máx) ao lado de uma entidade indica quantas ocorrências dessa entidade se associam a uma ocorrência da outra. Exemplo: em POSSUI, CLIENTE (1,1) e VEICULO (0,n) significam que um veículo pertence a exatamente um cliente e um cliente pode ter zero ou vários veículos.
 
-Optou-se por não modelar "produtos utilizados" como texto livre (como é feito hoje no talão de papel), pois isso impede consultas como "quantas pastilhas de freio foram usadas no mês" ou "quais peças estão em falta" — problemas que o levantamento identificou como reais na operação atual da oficina.
+| Relacionamento | Entidade A | Entidade B | Leitura |
+|---|---|---|---|
+| POSSUI | CLIENTE (1,1) | VEICULO (0,n) | Um veículo pertence a um cliente; um cliente tem vários veículos |
+| É_PARA | VEICULO (1,1) | AGENDAMENTO (0,n) | Um agendamento é para um veículo; um veículo pode ter vários agendamentos |
+| ESCOLHE | MECANICO (1,1) | AGENDAMENTO (0,n) | Um agendamento tem um mecânico; um mecânico atende vários agendamentos |
+| ORIGINA_OS | AGENDAMENTO (0,1) | ORDEM_SERVICO (0,1) | Uma OS vem de no máximo um agendamento (cliente de balcão não tem); um agendamento gera no máximo uma OS |
+| GERA_OS | VEICULO (1,1) | ORDEM_SERVICO (0,n) | Uma OS é de um veículo; um veículo tem várias OS |
+| EXECUTA | MECANICO (1,1) | ORDEM_SERVICO (0,n) | Uma OS tem um mecânico responsável; um mecânico executa várias OS |
+| RECEBE | ORDEM_SERVICO (1,1) | PAGAMENTO (0,1) | Um pagamento é de uma OS; uma OS tem no máximo um pagamento (conta assinada ainda não paga não tem) |
+| FORNECE | FORNECEDOR (1,1) | COMPRA (0,n) | Uma compra tem um fornecedor; um fornecedor tem várias compras |
+| RETORNO_DE | ORDEM_SERVICO (autorrelacionamento) | ORDEM_SERVICO | Uma OS de retorno refere-se a no máximo uma OS original; uma OS original pode ter vários retornos |
+
+| Entidade associativa | Liga | Cardinalidades | Atributos próprios |
+|---|---|---|---|
+| UTILIZA | ORDEM_SERVICO e PECA | (0,n) e (0,n) | `quantidade`, `valor_unitario` (preço praticado na OS) |
+| REALIZA | ORDEM_SERVICO e SERVICO | (0,n) e (0,n) | `valor_cobrado` |
+| CONTEM | COMPRA e PECA | COMPRA (0,n) e PECA (1,n) | `quantidade`, `valor_unitario` (preço pago na compra) |
+
+	#### Correções da Entrega 1
+
+| Apontamento da E1 | O que mudou | Por quê |
+|---|---|---|
+| DER entregue em SVG | Exportado em PNG (`diagramas/der-oficina-tricai.png`), feito no brModelo | Formato exigido pela disciplina |
+| Nenhuma cardinalidade mínima | Todos os relacionamentos com (mín,máx) | Mostra participação obrigatória ou opcional, como uma OS ainda sem pagamento |
+| Diagrama de tabelas com setas, sem losangos | Refeito com entidades, losangos e atributos | O DER conceitual representa os relacionamentos explicitamente |
+| Chaves estrangeiras no DER | Removidas do DER | FK é decisão do modelo lógico |
+| AGENDAMENTO sem ligação com OS e MECANICO | Criados ORIGINA_OS e ESCOLHE | Cliente de balcão não tem agendamento; agendamento cancelado não gera OS; RN02 depende do mecânico no agendamento |
+| AGENDAMENTO ligado a CLIENTE | Relacionamento removido | O cliente é obtido pelo veículo; evita agendamento com cliente e veículo incompatíveis |
+| Entidades associativas sem atributos próprios | ITEM_PECA_OS virou UTILIZA (`quantidade`, `valor_unitario`); ITEM_SERVICO virou REALIZA (`valor_cobrado`) | Sem esses atributos não se sabe quanto foi vendido nem a que preço |
+| SERVICO ausente | Criado como catálogo de serviços | Evita descrição livre e permite consultar serviços mais realizados |
+| FORNECEDOR e COMPRA ausentes | Criados como melhoria proposta, com CONTEM | A oficina compra peças sem registro; sem eles o estoque não tem entrada |
+| ORCAMENTO ausente | Não criado; ausência justificada na seção 2 | A oficina não trabalha com orçamento |
+| Cardinalidades de EXECUTA e RECEBE | Um mecânico responsável por OS (RN07); um pagamento por OS (RN04) | Alinha DER e regras |
+| Garantia e retorno ausentes | Criado RETORNO_DE (RN14, RF15) | Retorno gera nova OS vinculada à original |
+| Nota fiscal ausente | Atributo `numero_nota_fiscal` em ORDEM_SERVICO e RN17 | A oficina emite nota e o número precisa ficar ligado à OS |
+| Processos e regras incompletos | Seções 2 e 4 ampliadas (compras, estoque, garantia, nota fiscal, conta assinada, LGPD) | Cobrem o que a oficina faz |
+| Dicionário só com tabelas de atributos | [PENDENTE: refazer `dicionario-dados.html`] | Atender os itens obrigatórios do dicionário |
+| Nomes abreviados e sem RGM | [PENDENTE: tabela de integrantes preenchida] | Identificação dos integrantes |
+| Possível conflito de interesse | Gabriel Tricai é filho de Alexandre Tricai, proprietário da oficina. O vínculo familiar foi declarado na caracterização da organização. | Transparência atendida |
+| Seções copiadas do esqueleto | Removidas (critérios atitudinais e resumo de pesos) | Não fazem parte do relatório |
+| Uso de IA | Seção 13 atualizada | Uso de IA deve ser declarado |
 
 ---
 
-### Uso de Inteligência Artificial
-*(documentação obrigatória — não é opcional se o grupo usou IA em qualquer etapa: pesquisa, escrita, organização de ideias ou revisão de texto)*
+### 1.2 Conversão do Modelo Conceitual para o Lógico
+
+A conversão foi feita com o assistente do brModelo e conferida à mão. O assistente coloca a chave estrangeira na tabela da entidade marcada com (0,n), por isso as cardinalidades do DER seguem a convenção da seção 5.
+
+| Elemento do conceitual | No lógico | Regra aplicada |
+|---|---|---|
+| Entidade com identificador (10 entidades) | Uma tabela com PK `id_...` | Cada entidade vira tabela |
+| POSSUI (CLIENTE–VEICULO) | `id_cliente` em VEICULO | FK no lado N |
+| É_PARA e ESCOLHE | `id_veiculo` e `id_mecanico` em AGENDAMENTO | FK no lado N |
+| GERA_OS e EXECUTA | `id_veiculo` e `id_mecanico` em ORDEM_SERVICO | FK no lado N |
+| RECEBE | `id_os` em PAGAMENTO (UNIQUE) | 1:1 opcional vira coluna única |
+| FORNECE | `id_fornecedor` em COMPRA | FK no lado N |
+| ORIGINA_OS (0,1)–(0,1) | `id_os` em AGENDAMENTO, opcional e UNIQUE | Relacionamento 1:1 opcional representado por chave estrangeira, sem necessidade de tabela intermediária |
+| RETORNO_DE (0,1)–(0,1) | `id_os_original` em ORDEM_SERVICO, opcional, FK e UNIQUE | Autorrelacionamento 1:1 opcional; cada OS original pode gerar no máximo um retorno |
+| Associativas N:N (UTILIZA, REALIZA, CONTEM) | Tabelas com PK composta e atributos próprios | N:N vira tabela |
+| Atributo composto `endereco` | 4 colunas em CLIENTE | Subatributos viram colunas |
+| Atributo `numero_nota_fiscal` | Coluna opcional e UNIQUE em ORDEM_SERVICO | Atributo simples |
+
+---
+
+### 1.3 Chaves Primárias e Estrangeiras
+
+A definição das chaves primárias (PK) e estrangeiras (FK) foi realizada durante a conversão do modelo conceitual para o modelo lógico relacional. As chaves primárias identificam cada registro de forma única, enquanto as chaves estrangeiras estabelecem os vínculos entre as tabelas e garantem a integridade referencial.
+
+**Chaves primárias**
+
+As entidades principais utilizam identificadores numéricos do tipo `INT`, como `id_cliente`, `id_veiculo`, `id_os` e `id_compra`. Esses identificadores permitem distinguir registros independentemente de alterações em informações como nome, telefone ou placa.
+
+As tabelas associativas `UTILIZA`, `REALIZA` e `CONTEM` possuem chaves primárias compostas pelas respectivas chaves estrangeiras, impedindo a repetição da mesma combinação de registros.
+
+**Chaves estrangeiras**
+
+| Tabela | Chave estrangeira | Referência |
+|---|---|---|
+| VEICULO | `id_cliente` | CLIENTE |
+| AGENDAMENTO | `id_veiculo` | VEICULO |
+| AGENDAMENTO | `id_mecanico` | MECANICO |
+| AGENDAMENTO | `id_os` (opcional) | ORDEM_SERVICO |
+| ORDEM_SERVICO | `id_veiculo` | VEICULO |
+| ORDEM_SERVICO | `id_mecanico` | MECANICO |
+| ORDEM_SERVICO | `id_os_original` (opcional) | ORDEM_SERVICO |
+| PAGAMENTO | `id_os` | ORDEM_SERVICO |
+| COMPRA | `id_fornecedor` | FORNECEDOR |
+| UTILIZA | `id_os`, `id_peca` | ORDEM_SERVICO, PECA |
+| REALIZA | `id_os`, `id_servico` | ORDEM_SERVICO, SERVICO |
+| CONTEM | `id_compra`, `id_peca` | COMPRA, PECA |
+
+**Integridade referencial**
+
+As chaves estrangeiras impedem que sejam cadastrados registros associados a entidades inexistentes. Por exemplo, uma ordem de serviço não pode fazer referência a um veículo que não esteja cadastrado.
+
+Para preservar o histórico da oficina, a implementação SQL utilizará restrições de integridade referencial, evitando a exclusão de registros que ainda possuam dependências.
+
+Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receber `NULL`. Restrições `UNIQUE` serão utilizadas quando necessário para garantir relacionamentos de cardinalidade máxima igual a um.
+
+	### 1.4 Normalização
+
+**1FN.** Todos os atributos são atômicos.
+- O endereço, antes um campo composto, foi dividido em `logradouro`, `numero`, `bairro` e `cep`.
+- Os "produtos utilizados" do talão de papel, que eram um campo de texto livre com vários itens, viraram linhas das tabelas UTILIZA e REALIZA (uma linha por peça ou serviço). Do mesmo modo, as peças de uma compra ficam em CONTEM.
+- Foi necessária porque uma OS real tem vários serviços e várias peças, e um campo único impediria consultas como "quantas pastilhas foram usadas no mês".
+
+**2FN.** Nas tabelas com PK composta (UTILIZA, REALIZA, CONTEM), todo atributo não chave depende da chave inteira.
+- `quantidade` e `valor_unitario` dependem do par (OS, peça), e `valor_cobrado` do par (OS, serviço).
+- O nome e o `valor_venda` da peça dependem só de `id_peca`, por isso ficam em PECA e não em UTILIZA ou CONTEM. A descrição do serviço fica em SERVICO pelo mesmo motivo.
+- As demais tabelas têm PK simples e já estão em 2FN.
+
+**3FN.** Nenhum atributo não chave depende de outro atributo não chave.
+- Nome e telefone do cliente só existem em CLIENTE, e placa e modelo só em VEICULO. Dados do mecânico e do fornecedor ficam nas suas tabelas.
+- Na Entrega 1, AGENDAMENTO guardava `id_cliente` e `id_veiculo`. Como o veículo determina o cliente, havia dependência transitiva (`id_veiculo` → `id_cliente`), e a coluna foi removida.
+- `numero_parcelas` depende da forma de pagamento (só crédito). Isso é uma regra de domínio e não uma dependência funcional entre tabelas; foi tratada com CHECK (RN04).
+
+**Decisões conscientes fora da 3FN**
+- `valor_total` em ORDEM_SERVICO e COMPRA é um dado derivado (RN08). Foi mantido para consultas rápidas e para guardar o valor fechado da OS, e é conferido pela consulta de auditoria de soma.
+- `valor_unitario` em UTILIZA copia o preço da peça no dia. Não é redundância: é um fato histórico (RN09), pois o preço da peça pode mudar depois.
+
+---
+
+### 1.5 Justificativas Técnicas
+
+**Chaves primárias:** todas as entidades usam um identificador numérico sequencial (`id_...`). As tabelas associativas usam PK composta formada pelas duas FKs, o que impede repetir a mesma peça na mesma OS.
+
+**Chaves estrangeiras:** as FKs seguem a seção 6. Todas usam `ON DELETE RESTRICT`, para que o histórico não se perca ao apagar um cliente, veículo ou peça (RN06).
+
+**Restrições**
+
+| Restrição | Coluna(s) | Regra |
+|---|---|---|
+| UNIQUE | `cpf_cnpj` (CLIENTE), `cnpj` (FORNECEDOR) | RF01, RF08 |
+| UNIQUE | `placa` (VEICULO) | RN06 |
+| UNIQUE | (`id_mecanico`, `data`, `horario`) em AGENDAMENTO | RN02 |
+| UNIQUE | `id_os` em AGENDAMENTO e `id_os` em PAGAMENTO | RN10 e RN04 |
+| UNIQUE | `numero_nota_fiscal` (ORDEM_SERVICO) | RN17 |
+| NOT NULL | `id_veiculo` e `id_mecanico` em ORDEM_SERVICO | RN01 e RN07 |
+| NOT NULL | `id_veiculo` e `id_mecanico` em AGENDAMENTO | RN11 |
+| NOT NULL | `id_fornecedor` em COMPRA | RN15 |
+| Opcional (aceita nulo) | `id_os` em AGENDAMENTO, `id_os_original`, `numero_nota_fiscal`, `data_fechamento` | RN03, RN14, RN17 |
+| CHECK | `numero_parcelas` entre 1 e 4 e só quando a forma de pagamento é crédito | RN04 |
+| CHECK | `forma_pagamento` em dinheiro, PIX, débito, crédito, cheque ou conta assinada | RF05 |
+| CHECK | `quantidade_estoque` ≥ 0; `quantidade` > 0 em UTILIZA e CONTEM | RN05 |
+| CHECK | valores de `status` válidos | RF02, RF03 |
+
+**Tipos:** `INT` para identificadores e quantidades; `VARCHAR` para texto, inclusive `cpf_cnpj`, `cep` e `telefone` (zeros à esquerda importam e ninguém soma esses valores); `DATE` e `TIME` para datas e horários; `DECIMAL(10,2)` para valores em reais; `BOOLEAN` para `mantida_em_estoque`.
+
+**Decisões gerais:** o cliente é obtido pelo veículo (sem `id_cliente` em AGENDAMENTO ou ORDEM_SERVICO); o orçamento não foi modelado (seção 2); compras e fornecedores entram como melhoria proposta, já que a oficina compra peças sem registrar; `estoque_minimo` só é aplicado às peças com `mantida_em_estoque` verdadeiro.
+
+---
+
+	### 1.6 Proposta de BI e IA
+
+[PREENCHER: confirmar cada KPI com a consulta correspondente no script. KPI sem consulta no script não é KPI.]
+
+| Problema ou KPI | Fórmula e período | Tabelas | Consulta |
+|---|---|---|---|
+| P3 — Peças em estoque abaixo do mínimo | Contagem de peças com `quantidade_estoque` < `estoque_minimo`, atual | PECA | G01 |
+| P2 — Histórico de OS por veículo | OS do veículo, por data | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA | G02 |
+| Tempo médio de atendimento | Média de (`data_fechamento` − `data_abertura`), por mês | ORDEM_SERVICO | G03 |
+| Faturamento mensal | Soma de `valor` dos pagamentos, por mês | PAGAMENTO | G04 |
+| P6 — Taxa de retorno por garantia | OS de retorno ÷ total de OS, por mês | ORDEM_SERVICO | G05 |
+| P4 — Carga de agendamentos por mecânico | Agendamentos por mecânico, por semana | AGENDAMENTO, MECANICO | G06 |
+| P5 — Gasto com compras por fornecedor | Soma de `valor_total`, por fornecedor e mês | COMPRA, FORNECEDOR | G07 |
+| P1 — Cadastro manual de clientes e veículos | Total de clientes cadastrados e quantidade de veículos vinculados a cada cliente | CLIENTE, VEICULO | G08 |
+
+**Consultas de auditoria previstas**
+
+| Código | Pergunta | Regra |
+|---|---|---|
+| A01 | Existe compra sem peça? | RN16 |
+| A02 | Existem ordens de serviço com pagamento registrado, mas sem número de nota fiscal? | RN17 |
+| A03 | Existe mecânico com dois agendamentos no mesmo horário? | RN02 |
+| A04 | Existem ordens de serviço de retorno vinculadas a uma OS original de outro veículo? | RN14 |
+| A05 | Existe pagamento com parcelas fora do crédito? | RN04 |
+| A06 | Existe peça com estoque negativo? | RN05 |
+| A07 | Existe OS com `valor_total` diferente da soma dos itens? | RN08 |
+
+**Aplicações de IA propostas:** previsão de reposição de peças de estoque a partir do histórico de uso (UTILIZA); lembrete de revisão por veículo a partir do histórico de OS.
+
+---
+
+	## 2. Modelo Lógico
+
+![Modelo lógico da Oficina Alexandre Tricai](diagramas/modelo-logico-oficina-tricai.png)
+
+```
+CLIENTE (id_cliente PK, nome, cpf_cnpj, telefone, email,
+         logradouro, numero, bairro, cep)
+
+VEICULO (id_veiculo PK, placa, modelo, ano, id_cliente FK)
+
+MECANICO (id_mecanico PK, nome, especialidade, telefone)
+
+AGENDAMENTO (id_agendamento PK, data, horario, status,
+             id_veiculo FK, id_mecanico FK, id_os FK opcional)
+
+ORDEM_SERVICO (id_os PK, data_abertura, data_fechamento, status,
+               descricao_problema, valor_total, numero_nota_fiscal,
+               id_veiculo FK, id_mecanico FK,
+               id_os_original FK opcional)
+
+PECA (id_peca PK, nome, quantidade_estoque, estoque_minimo,
+      valor_venda, mantida_em_estoque)
+
+SERVICO (id_servico PK, descricao, valor_padrao)
+
+UTILIZA (id_os PK/FK, id_peca PK/FK, quantidade, valor_unitario)
+REALIZA (id_os PK/FK, id_servico PK/FK, valor_cobrado)
+
+FORNECEDOR (id_fornecedor PK, nome, cnpj, telefone)
+
+COMPRA (id_compra PK, data_compra, data_recebimento, valor_total,
+        id_fornecedor FK)
+
+CONTEM (id_compra PK/FK, id_peca PK/FK, quantidade, valor_unitario)
+
+PAGAMENTO (id_pagamento PK, data_pagamento, valor, forma_pagamento,
+           numero_parcelas, id_os FK)
+```
+
+---
+
+
+	## 3. Script SQL
+
+Script em [`docs/`](docs/) com, nesta ordem: criação do banco, criação das tabelas, restrições, massa de dados fictícia, SELECT com JOIN, UPDATE e DELETE, consultas gerenciais (G) e de auditoria (A). [PREENCHER: nome do arquivo e como executar]
+
+A massa de dados é fictícia. Inclui OS canceladas, clientes sem OS, peças abaixo do mínimo, OS paga sem nota fiscal (para demonstrar a A02) e formas de pagamento e períodos variados.
+
+	## 4. Dicionário de Dados
+
+[`dicionario-dados.html`](dicionario-dados.html) [PENDENTE: atualizar para o modelo atual, com as entidades novas e os itens obrigatórios].
+
+---
+
+## 5. Uso de Inteligência Artificial
+
+**Entrega 1**
 
 | Item | Registro |
-|------|------------------|
-| **Ferramenta e etapa** | Claude (Anthropic) — usado ao longo de toda a Entrega 1: organização do levantamento de campo, estruturação do README conforme o esqueleto oficial, redação dos requisitos funcionais/não funcionais, regras de negócio, dicionário de dados e modelagem conceitual preliminar. |
-| **Motivação** | O grupo utilizou a IA para organizar e estruturar as informações coletadas na visita à oficina dentro do formato exigido pelo roteiro da disciplina, e para não perder tempo formatando manualmente cada seção do README. |
-| **Prompt(s) utilizados** | 1) O grupo colou o esqueleto da Entrega 1 e pediu um resumo explicativo da atividade para que nada ficasse de fora do entendimento deles. 2) O grupo informou os dados levantados na visita à Oficina Tricai (nome, tipo, tamanho, endereço, contato, problema operacional e descrição do funcionamento — cadastro, atendimento, pagamento, agendamento, estoque) e pediu para estruturar isso.
-| **Resposta recebida** | A IA propôs a divisão das entidades CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, ITEM_SERVICO, PECA, ITEM_PECA_OS e PAGAMENTO, com atributos, relacionamentos e cardinalidades, o texto de cada seção do README seguindo os títulos oficiais do esqueleto, e gerou o DER e os fluxogramas como imagens a partir do modelo definido. |
-| **Fontes consultadas e verificadas** | Não foram citadas fontes externas pela IA; todo o conteúdo foi baseado nas informações fornecidas pelo grupo a partir da visita de campo (entrevista, fotos, modelo físico de OS). O grupo validou cada entidade e regra contra o que foi observado na oficina, e confirmou diretamente com o proprietário os pontos em que a sugestão da IA divergia dos documentos apresentados. |
-| **Trechos rejeitados ou corrigidos** | O modelo inicial de formas de pagamento gerado pela IA foi baseado apenas no talão impresso da Ordem de Serviço (dinheiro, débito, crédito, cheque, conta assinada) e não incluía PIX nem parcelamento. O grupo corrigiu esse ponto após confirmar com o proprietário que essas opções também são praticadas.
-| **Justificativa da escolha final** | O grupo manteve a divisão de entidades e relacionamentos sugerida pela IA por considerá-la coerente com os processos observados na visita de campo, e ajustou o atributo de forma de pagamento (incluindo `numero_parcelas`) para refletir com precisão a prática real da oficina, e não apenas o formulário impresso. |
-| **Reflexão crítica** | A IA não teve acesso direto à oficina; todo o modelo depende da precisão das informações repassadas pelo grupo na entrevista e nas fotos. Um exemplo concreto ocorreu durante o trabalho: o modelo impresso da Ordem de Serviço não lista PIX nem parcelamento como formas de pagamento, mas o grupo já sabia, pela entrevista com o proprietário, que essas opções são praticadas na prática. O grupo identificou a divergência entre o documento físico e a entrevista, e confirmou com o proprietário que PIX e parcelamento em até 4x deveriam ser incluídos no modelo — o que reforça a importância de validar toda sugestão da IA contra a realidade observada em campo, e não apenas contra um único documento. |
+|---|---|
+| Ferramenta e etapa | Claude (Anthropic): organização do levantamento, estrutura do README, requisitos, regras, dicionário e modelagem conceitual preliminar |
+| Motivação | Estruturar as informações da visita no formato exigido pelo roteiro |
+| Trechos rejeitados ou corrigidos | O modelo de formas de pagamento seguia só o talão impresso (sem PIX e parcelamento); o grupo corrigiu após confirmar com o proprietário |
 
-## Conclusão
+**Entrega 2**
 
-Este trabalho levantou, a partir de visita de campo à Oficina Alexandre Tricai, os processos, requisitos e regras de negócio de uma oficina mecânica especializada em vans Mercedes-Benz, e propôs um Modelo Conceitual de banco de dados representado pelo DER com 9 entidades (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVICO, ITEM_SERVICO, PECA, ITEM_PECA_OS e PAGAMENTO).
+| Item | Registro |
+|---|---|
+| Ferramenta e etapa | Claude (Anthropic): revisão do DER a partir da correção do professor, definição do modelo lógico, conferência da conversão do brModelo, normalização e atualização do README |
+| Motivação | Responder cada apontamento da E1 e conferir o modelo antes da conversão |
+| Prompts e respostas | O grupo enviou os arquivos da E1, a correção do professor (issue), o PDF da E2, imagens e PDFs do DER conceitual e do lógico, e prints de conversas com a oficina. A IA devolveu listas de ajustes de cardinalidade, atributos e entidades, o texto de regras e processos, e esta versão do README |
+| Fontes verificadas | Correção do professor, material da disciplina e conversas com Gabriel Tricai sobre compras e nota fiscal. A IA não teve acesso à oficina |
+| Trechos rejeitados ou corrigidos | (1) A IA leu a cardinalidade de PAGAMENTO ao contrário na primeira análise e corrigiu em seguida. (2) Sugeriu uma tabela N:N entre OS e MECANICO e uma entidade genérica ITEM_OS; o grupo descartou ambas porque contradiziam o levantamento (um mecânico por OS) e o README (peças e serviços em estruturas separadas). (3) Sugeriu atributos em maiúsculas, em conflito com os prefixos pedidos pelo professor. (4) Leu o (mín,máx) pela convenção usual da literatura, mas o conversor do brModelo coloca a FK do lado (0,n); o grupo inverteu as cardinalidades e converteu de novo. (5) Contou uma entidade a mais no DER. (6) Sugeriu ORCAMENTO, que o grupo não incluiu porque a oficina não trabalha com orçamento |
+| Justificativa da escolha final | O grupo manteve as sugestões que bateram com o levantamento e com o que o conversor do brModelo gerou, e rejeitou as que não bateram |
+| Reflexão crítica | A IA acertou o desenho geral, mas errou detalhes que só aparecem ao confrontar com a ferramenta e com a oficina: a leitura das cardinalidades, entidades que o levantamento não sustentava e uma contagem. Mensagens dos colegas valem menos que a entrevista com o proprietário, e o grupo precisa validar cada afirmação (nota fiscal, garantia, conta assinada) diretamente com a oficina |
 
-O modelo proposto contribui diretamente para os problemas identificados na oficina: substitui o cadastro repetido em talão de papel por um cadastro centralizado de clientes e veículos, permite consultar o histórico de manutenção por veículo, viabiliza o controle de estoque de peças (hoje inexistente) e organiza os agendamentos em um único lugar, reduzindo o risco de conflito de horários entre mecânicos.
+---
 
-Um dos principais aprendizados do grupo foi perceber a diferença entre um processo formalizado em um formulário e o que de fato acontece na prática: o talão de Ordem de Serviço da oficina não previa PIX nem parcelamento como formas de pagamento, mas isso só foi descoberto porque cruzamos o documento físico com a entrevista feita com o proprietário — o que reforçou a importância de validar cada regra de negócio contra mais de uma fonte de informação. Outra dificuldade foi decidir até que ponto separar entidades: por exemplo, discutimos se AGENDAMENTO deveria ser uma entidade própria ou apenas um status dentro de ORDEM_SERVICO, e optamos por separá-las porque nem todo agendamento vira, de fato, um atendimento. Esse processo mostrou que modelagem conceitual não é só desenhar caixas e setas, mas tomar decisões justificadas sobre como a realidade observada deve ser representada no banco de dados.
+	## Conclusão
 
-Como trabalhos futuros, o modelo pode ser expandido para incluir controle de garantia de peças e serviços, relatórios gerenciais de estoque (peças com baixa rotatividade, previsão de reposição) e controle formal da escala/jornada dos mecânicos — hoje registrados apenas de forma informal. Essas expansões ficam para as próximas etapas do curso, quando o modelo conceitual evoluirá para os modelos lógico e físico do banco de dados.
+A partir da visita à Oficina Alexandre Tricai, o grupo modelou os dados de uma oficina mecânica especializada em vans Mercedes-Benz Sprinter CDI e levou o modelo do DER conceitual até o banco em MySQL. O modelo resolve os problemas P1 a P6: cadastro único de clientes e veículos, histórico por veículo, controle de estoque com entrada por compra e baixa por OS, agendamento com mecânico e registro de compras e fornecedores.
+
+Aprendizados: o formulário impresso da OS não previa PIX nem parcelamento, o que só apareceu ao cruzar o documento com a entrevista; e a ferramenta de conversão do brModelo interpretou as cardinalidades de forma diferente da leitura usual, o que obrigou o grupo a conferir o modelo lógico gerado em vez de aceitá-lo. [PREENCHER: dificuldades e decisões do grupo, com suas próprias palavras]
+
+Trabalhos futuros: orçamento formal, controle financeiro (contas a pagar e caixa) e escala dos mecânicos.
 
 ## Referências Bibliográficas
 
 ANDRADE, Cid R. *Análise de Requisitos para Modelagem de Dados*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
 
-ANDRADE, Cid R. *Aspectos Éticos, Legais e Tecnológicos no Uso de Dados: Fundamentos para a Modelagem*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Aspectos Éticos, Legais e Tecnológicos no Uso de Dados: Fundamentos para a Modelagem*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *Construção de Dicionário de Dados*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Construção de Dicionário de Dados*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *Diferença entre os Modelos de Dados Conceitual, Lógico e Físico*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Diferença entre os Modelos de Dados Conceitual, Lógico e Físico*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *ER Modeling Blueprint*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *ER Modeling Blueprint*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *Exemplo de Dicionário de Dados*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Exemplo de Dicionário de Dados*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *Guia Git e GitHub: Quatro Cenários*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Guia Git e GitHub: Quatro Cenários*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *Modelo e Diagrama Entidade-Relacionamento (MER/DER)*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *Modelo e Diagrama Entidade-Relacionamento (MER/DER)*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
-ANDRADE, Cid R. *UML e DER*. Material de apoio — Modelagem de Banco de Dados. São Paulo: Universidade Cidade de São Paulo (UNICID), 2026.
+ANDRADE, Cid R. *UML e DER*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
 
----
-
-## Critérios Atitudinais (20%)
-**Estes critérios NÃO constam explicitamente como item de entrega no README.** Eles são avaliados por meio de **Avaliação 360º entre os integrantes do grupo** (cada membro avalia os colegas de equipe), e não pela leitura do repositório ou pela apresentação:
-
-- **Participação (5%):** envolvimento nas discussões técnicas e nas decisões do grupo.
-- **Comprometimento (5%):** cumprimento de prazos e responsabilidades assumidas.
-- **Colaboração (5%):** respeito às contribuições dos colegas e cooperação na construção do projeto.
-- **Autonomia (5%):** busca independente de soluções e proposta de melhorias.
-
----
-
-## Resumo dos Pesos
-
-| Dimensão | Peso total |
-|----------|-----------|
-| Conceitual (contexto, requisitos/regras, modelagem, justificativa técnica) | 30% |
-| Procedimental (requisitos, fluxogramas, dicionário de dados, DER) | 50% |
-| Atitudinal (participação, comprometimento, colaboração, autonomia) | 20% |
-
-**Entrega final:** README.md completo + DER anexado no repositório GitHub do grupo.
+ANDRADE, Cid R. *Entrega 2: Do modelo ao banco*. Material de apoio — Modelagem de Banco de Dados. São Paulo: UNICID, 2026.
