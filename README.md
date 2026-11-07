@@ -406,7 +406,7 @@ FORNECEDOR (id_fornecedor PK, nome, cnpj, telefone)
 COMPRA (id_compra PK, data_compra, data_recebimento, valor_total,
         id_fornecedor FK)
 
-CONTEM (id_compra PK/FK, id_peca PK/FK, quantidade, valor_unitario)
+CONTEM (id_compra PK/FK, id_peca PK/FK, quantidade, valor_custo)
 
 PAGAMENTO (id_pagamento PK, data_pagamento, valor, forma_pagamento,
            numero_parcelas, id_os FK)
