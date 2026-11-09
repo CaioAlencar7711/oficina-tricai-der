@@ -349,34 +349,43 @@ Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receb
 
 	### 1.6 Proposta de BI e IA
 
-[PREENCHER: confirmar cada KPI com a consulta correspondente no script. KPI sem consulta no script não é KPI.]
+### 1.6 Proposta de BI e IA
+
+As consultas gerenciais foram desenvolvidas para transformar os dados registrados pela oficina em informações úteis para acompanhamento operacional e tomada de decisão.
+
+**Indicadores gerenciais (KPIs)**
 
 | Problema ou KPI | Fórmula e período | Tabelas | Consulta |
 |---|---|---|---|
-| P3 — Peças em estoque abaixo do mínimo | Contagem de peças com `quantidade_estoque` < `estoque_minimo`, atual | PECA | G01 |
-| P2 — Histórico de OS por veículo | OS do veículo, por data | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA | G02 |
-| Tempo médio de atendimento | Média de (`data_fechamento` − `data_abertura`), por mês | ORDEM_SERVICO | G03 |
-| Faturamento mensal | Soma de `valor` dos pagamentos, por mês | PAGAMENTO | G04 |
-| P6 — Taxa de retorno por garantia | OS de retorno ÷ total de OS, por mês | ORDEM_SERVICO | G05 |
-| P4 — Carga de agendamentos por mecânico | Agendamentos por mecânico, por semana | AGENDAMENTO, MECANICO | G06 |
-| P5 — Gasto com compras por fornecedor | Soma de `valor_total`, por fornecedor e mês | COMPRA, FORNECEDOR | G07 |
-| P1 — Cadastro manual de clientes e veículos | Total de clientes cadastrados e quantidade de veículos vinculados a cada cliente | CLIENTE, VEICULO | G08 |
+| P3 — Peças em estoque abaixo do mínimo | Contagem de peças com `quantidade_estoque` menor que `estoque_minimo`, considerando o estoque atual | PECA | G01 |
+| P2 — Histórico de OS por veículo | Listagem das ordens de serviço, serviços e peças vinculados a cada veículo | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA | G02 |
+| Tempo médio de atendimento | Média de dias entre `data_abertura` e `data_fechamento`, agrupada por mês | ORDEM_SERVICO | G03 |
+| Faturamento mensal | Soma dos valores registrados em pagamentos, agrupada por mês | PAGAMENTO | G04 |
+| P6 — Taxa de retorno por garantia | Quantidade de OS de retorno dividida pelo total de OS, multiplicada por 100, por mês | ORDEM_SERVICO | G05 |
+| P4 — Carga de agendamentos por mecânico | Quantidade de agendamentos por mecânico, agrupada por semana | AGENDAMENTO, MECANICO | G06 |
+| P5 — Gastos com compras por fornecedor | Soma do valor total das compras por fornecedor e mês | COMPRA, FORNECEDOR | G07 |
+| P1 — Cadastro de clientes e veículos | Total de clientes cadastrados e quantidade de veículos vinculados a cada cliente | CLIENTE, VEICULO | G08 |
 
-**Consultas de auditoria previstas**
+**Consultas de auditoria**
+
+As consultas de auditoria verificam a integridade dos registros e a conformidade dos dados com as regras de negócio definidas para o sistema.
 
 | Código | Pergunta | Regra |
 |---|---|---|
-| A01 | Existe compra sem peça? | RN16 |
+| A01 | Existem compras sem nenhuma peça registrada? | RN16 |
 | A02 | Existem ordens de serviço com pagamento registrado, mas sem número de nota fiscal? | RN17 |
-| A03 | Existe mecânico com dois agendamentos no mesmo horário? | RN02 |
-| A04 | Existem ordens de serviço de retorno vinculadas a uma OS original de outro veículo? | RN14 |
-| A05 | Existe pagamento com parcelas fora do crédito? | RN04 |
-| A06 | Existe peça com estoque negativo? | RN05 |
-| A07 | Existe OS com `valor_total` diferente da soma dos itens? | RN08 |
+| A03 | Existe mecânico com dois agendamentos ativos no mesmo dia e horário? | RN02 |
+| A04 | Existem ordens de serviço de retorno vinculadas a uma OS original de outro veículo? | RN19 |
+| A05 | Existem pagamentos com parcelamento fora das regras estabelecidas? | RN04 |
+| A06 | Existem peças com quantidade de estoque inferior a zero? | RN05 |
+| A07 | Existem ordens de serviço concluídas cujo valor total diverge da soma dos serviços e peças utilizados? | RN08 |
 
-**Aplicações de IA propostas:** previsão de reposição de peças de estoque a partir do histórico de uso (UTILIZA); lembrete de revisão por veículo a partir do histórico de OS.
+**Aplicações de IA propostas**
 
----
+- Previsão de reposição de peças mantidas em estoque, utilizando o histórico de utilização registrado na tabela UTILIZA.
+- Geração de lembretes de revisão por veículo, utilizando o histórico de ordens de serviço.
+
+As aplicações de IA são propostas para futuras expansões do sistema, não funcionalidades implementadas nesta entrega.
 
 	## 2. Modelo Lógico
 
@@ -422,9 +431,31 @@ PAGAMENTO (id_pagamento PK, data_pagamento, valor, forma_pagamento,
 
 	## 3. Script SQL
 
-Script em [`docs/`](docs/) com, nesta ordem: criação do banco, criação das tabelas, restrições, massa de dados fictícia, SELECT com JOIN, UPDATE e DELETE, consultas gerenciais (G) e de auditoria (A). [PREENCHER: nome do arquivo e como executar]
+## 3. Script SQL
 
-A massa de dados é fictícia. Inclui OS canceladas, clientes sem OS, peças abaixo do mínimo, OS paga sem nota fiscal (para demonstrar a A02) e formas de pagamento e períodos variados.
+O banco de dados foi implementado em MySQL 8, com scripts organizados por etapa para facilitar a criação, alimentação, consulta e auditoria das informações da oficina.
+
+**Arquivos SQL**
+
+| Arquivo | Descrição |
+|---|---|
+| `01_estrutura.sql` | Criação do banco de dados, tabelas, chaves primárias, chaves estrangeiras e restrições. |
+| `02_dados.sql` | Inserção da massa de dados fictícia utilizada nos testes. |
+| `03_consultas.sql` | Consultas operacionais e oito consultas gerenciais identificadas de G01 a G08. |
+| `04_auditoria.sql` | Sete consultas de auditoria identificadas de A01 a A07, relacionadas às regras de negócio. |
+
+**Ordem de execução**
+
+1. Executar `01_estrutura.sql` para criar o banco e suas tabelas.
+2. Executar `02_dados.sql` para inserir os registros de teste.
+3. Executar `03_consultas.sql` para visualizar as informações operacionais e gerenciais.
+4. Executar `04_auditoria.sql` para verificar possíveis inconsistências nos registros.
+
+**Massa de dados e validação**
+
+A massa de dados utilizada é fictícia e contempla diferentes situações operacionais, incluindo clientes sem ordens de serviço, ordens em andamento, ordens concluídas, retornos, pagamentos e registros utilizados para demonstrar o funcionamento das auditorias.
+
+As consultas foram executadas no MySQL Workbench, utilizando o banco `oficina_tricai`.
 
 	## 4. Dicionário de Dados
 
