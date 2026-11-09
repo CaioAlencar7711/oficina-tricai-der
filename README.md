@@ -40,23 +40,28 @@ A Oficina Mecânica Alexandre Tricai é uma oficina de pequeno porte em Suzano-S
 - **Nome e natureza:** Alexandre Tricai - Oficina Mecânica Especializada, empresa com fins lucrativos, CNPJ 14.855.257/0001-30.
 - **Vínculo do grupo:** Gabriel Tricai, integrante do grupo, é filho de Alexandre Tricai, proprietário da oficina. Esse vínculo familiar facilitou o contato com o responsável pelo estabelecimento e a realização da entrevista para o levantamento de informações.
 - **Porte (números):**
-  - Pessoas: 4 a 5 envolvidas (proprietário e mecânicos), todas sem registro em sistema de RH.
-  - Atendimentos: [PREENCHER: nº de OS por semana]
-  - Clientes ativos: [PREENCHER] · Veículos atendidos por mês: [PREENCHER]
-  - Peças mantidas em estoque: [PREENCHER nº de itens] · Fornecedor principal: Rodobens.
+  - Pessoas: 4 a 5 envolvidas (proprietário e mecânicos), sem registro em sistema de RH.
+  - Atendimentos: aproximadamente 20 por semana.
+  - Clientes ativos: aproximadamente 50.
+  - Veículos atendidos: aproximadamente 70 por mês.
+  - Peças mantidas em estoque: aproximadamente 40.
+  - Fornecedor principal: Rodobens.
+Os números foram informados por Gabriel Tricai, com base nas informações fornecidas por Alexandre Tricai, proprietário da oficina. Como o estabelecimento não possui controle sistematizado desses indicadores, os valores são tratados como estimativas.
 - **Escopo:** todos os dados da operação da oficina: clientes, veículos, mecânicos, agendamentos, ordens de serviço, serviços, peças, compras, fornecedores, pagamentos e notas fiscais.
 - **Responsável que atendeu o grupo:** Alexandre Tricai, proprietário da oficina. Telefone: (11) 99778-1502.
 
 **Problemas identificados e como o modelo os resolve**
 
+
 | Código | Problema | Resolvido por |
 |---|---|---|
-| P1 | Cadastro de cliente e veículo refeito em papel a cada OS | CLIENTE, VEICULO |
-| P2 | Sem histórico consultável de manutenções por cliente ou veículo | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA |
-| P3 | Estoque sem controle de quantidade nem baixa por serviço | PECA, UTILIZA, CONTEM |
-| P4 | Agendamento por WhatsApp/telefone, sem registro central, com risco de conflito de horários entre mecânicos | AGENDAMENTO, MECANICO |
-| P5 | Compras de peças e fornecedores sem registro formal | FORNECEDOR, COMPRA, CONTEM |
-| P6 | Retorno do veículo por problema no mesmo serviço sem vínculo com a OS original [CONFIRMAR com a oficina] | RETORNO_DE |
+| P1 | Cadastro de clientes e veículos realizado em papel a cada ordem de serviço, dificultando a organização das informações. | CLIENTE, VEICULO |
+| P2 | Dificuldade para consultar o histórico de manutenções realizadas em clientes e veículos. | VEICULO, ORDEM_SERVICO, REALIZA, UTILIZA |
+| P3 | Controle visual do estoque, sem registro sistematizado das quantidades e das peças utilizadas em cada serviço. | PECA, UTILIZA, CONTEM |
+| P4 | Agendamentos realizados por WhatsApp ou telefone, sem registro centralizado, podendo gerar conflitos de horários. | AGENDAMENTO, MECANICO |
+| P5 | Compras de peças realizadas conforme a necessidade, sem registro formal das compras e dos fornecedores no sistema. | FORNECEDOR, COMPRA, CONTEM |
+| P6 | Necessidade de vincular os retornos de veículos às ordens de serviço originais, facilitando o acompanhamento dos serviços anteriores. | ORDEM_SERVICO (autorre relacionamento por id_os_original) |
+
 
 **Evidências**
 
@@ -72,7 +77,7 @@ A Oficina Mecânica Alexandre Tricai é uma oficina de pequeno porte em Suzano-S
 
 Texto completo em [`levantamento.md`](levantamento.md). Resumo:
 
-- **Entrevista:** realizada por Gabriel Tricai com Alexandre Tricai, responsável pela oficina, em 04/11/2026. A entrevista teve como objetivo compreender a rotina do estabelecimento, os processos de atendimento e as práticas de controle de peças e estoque.
+- **Entrevista:** realizada por Gabriel Tricai com Alexandre Tricai, responsável pela oficina, em 06/11/2026. A entrevista teve como objetivo compreender a rotina do estabelecimento, os processos de atendimento e as práticas de controle de peças e estoque.
 - **Informações obtidas na entrevista:** Alexandre Tricai relatou que a oficina normalmente adquire peças na Rodobens. Apenas itens de revisão, como filtros de óleo, filtros de ar, filtros de combustível e pastilhas de freio, são mantidos em estoque. As demais peças são compradas conforme a necessidade de cada veículo, sendo os custos repassados ao cliente. A oficina emite nota fiscal, mas não mantém registros formais das compras e do estoque.
 
 
@@ -164,12 +169,12 @@ Emissão da nota fiscal
 - **RN09** — O valor unitário da peça na OS é o praticado no dia e não muda se o preço da peça mudar depois.
 - **RN10** — Agendamento cancelado ou com não comparecimento não gera OS. Cada agendamento gera no máximo uma OS.
 - **RN11** — Todo agendamento refere-se a exatamente um veículo e um mecânico.
-- **RN12** — Conta assinada só para clientes autorizados pelo proprietário e com prazo definido; a OS fica sem pagamento registrado até a quitação. [CONFIRMAR condições]
+- **RN12** — Conta assinada só para clientes autorizados pelo proprietário e com prazo definido; a OS fica sem pagamento registrado até a quitação. 
 - **RN13** — A peça comprada pela oficina para o reparo é cobrada do cliente na OS.
-- **RN14** — Serviços e peças têm garantia legal de 90 dias (CDC, art. 26). Retorno dentro do prazo gera nova OS vinculada à original. [CONFIRMAR prazo praticado]
+- **RN14** — Os serviços possuem prazo de garantia de 90 dias, conforme informado pela oficina. Quando um veículo retorna por problema relacionado ao serviço anterior, uma nova ordem de serviço pode ser vinculada à original. Cada OS original pode gerar, no máximo, um retorno registrado.
 - **RN15** *(proposto)* — Compra só de fornecedor cadastrado; a entrada no estoque só ocorre após conferir quantidade e valor.
 - **RN16** *(proposto)* — Toda compra tem ao menos uma peça.
-- **RN17** — A oficina emite nota fiscal de serviços e peças (informado por Gabriel Tricai em [PREENCHER data]). O número da nota é registrado na OS e é único. A emissão do documento ocorre fora do sistema. [CONFIRMAR: nota emitida para toda OS ou só quando o cliente pede?]
+- **RN17** — A oficina emite nota fiscal em todos os serviços realizados. O sistema proposto registra o número da nota fiscal na ordem de serviço, enquanto a emissão do documento ocorre fora do sistema.
 - **RN18** — Os dados pessoais dos clientes (nome, `cpf_cnpj`, telefone, e-mail, endereço) são usados só para atendimento e cobrança, com acesso restrito. Correção ou exclusão a pedido do titular, ressalvada a guarda fiscal obrigatória (LGPD).
 - **RN19** — Uma ordem de serviço de retorno deve estar vinculada a uma OS original do mesmo veículo. Cada OS original pode gerar no máximo um retorno.
 
@@ -227,7 +232,7 @@ O DER tem **10 entidades** (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVI
 | Nota fiscal ausente | Atributo `numero_nota_fiscal` em ORDEM_SERVICO e RN17 | A oficina emite nota e o número precisa ficar ligado à OS |
 | Processos e regras incompletos | Seções 2 e 4 ampliadas (compras, estoque, garantia, nota fiscal, conta assinada, LGPD) | Cobrem o que a oficina faz |
 | Dicionário só com tabelas de atributos | [PENDENTE: refazer `dicionario-dados.html`] | Atender os itens obrigatórios do dicionário |
-| Nomes abreviados e sem RGM | [PENDENTE: tabela de integrantes preenchida] | Identificação dos integrantes |
+| Nomes abreviados e sem RGM | tabela de integrantes preenchida] | Identificação dos integrantes |
 | Possível conflito de interesse | Gabriel Tricai é filho de Alexandre Tricai, proprietário da oficina. O vínculo familiar foi declarado na caracterização da organização. | Transparência atendida |
 | Seções copiadas do esqueleto | Removidas (critérios atitudinais e resumo de pesos) | Não fazem parte do relatório |
 | Uso de IA | Seção 13 atualizada | Uso de IA deve ser declarado |
@@ -455,7 +460,7 @@ A massa de dados é fictícia. Inclui OS canceladas, clientes sem OS, peças aba
 
 A partir da visita à Oficina Alexandre Tricai, o grupo modelou os dados de uma oficina mecânica especializada em vans Mercedes-Benz Sprinter CDI e levou o modelo do DER conceitual até o banco em MySQL. O modelo resolve os problemas P1 a P6: cadastro único de clientes e veículos, histórico por veículo, controle de estoque com entrada por compra e baixa por OS, agendamento com mecânico e registro de compras e fornecedores.
 
-Aprendizados: o formulário impresso da OS não previa PIX nem parcelamento, o que só apareceu ao cruzar o documento com a entrevista; e a ferramenta de conversão do brModelo interpretou as cardinalidades de forma diferente da leitura usual, o que obrigou o grupo a conferir o modelo lógico gerado em vez de aceitá-lo. [PREENCHER: dificuldades e decisões do grupo, com suas próprias palavras]
+Aprendizados: o formulário impresso da OS não previa PIX nem parcelamento, o que só apareceu ao cruzar o documento com a entrevista; e a ferramenta de conversão do brModelo interpretou as cardinalidades de forma diferente da leitura usual, o que obrigou o grupo a conferir o modelo lógico gerado em vez de aceitá-lo. 
 
 Trabalhos futuros: orçamento formal, controle financeiro (contas a pagar e caixa) e escala dos mecânicos.
 
