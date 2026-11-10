@@ -207,5 +207,5 @@ As regras devem ser verificadas contra os scripts SQL finais. Algumas representa
 
 ## 11. Considerações finais e pontos de validação
 
-O levantamento partiu das informações da entrevista inicial, foi aprofundado por uma segunda etapa de esclarecimentos estruturados com o proprietario e recebeu registros fotográficos. As evidências mostram o ambiente de manutenção e o armazenamento físico das peças, enquanto as regras operacionais decorrem das informações fornecidas pelos contatos da oficina e da análise do grupo.
-
+- O levantamento partiu das informações da entrevista inicial, foi aprofundado por uma segunda etapa de esclarecimentos estruturados com o proprietario e recebeu registros fotográficos. As evidências mostram o ambiente de manutenção e o armazenamento físico das peças, enquanto as regras operacionais decorrem das informações fornecidas pelos contatos da oficina e da análise do grupo.
+- Um dos integrantes do grupo, Gabriel Ferraz Aguiar Tricai, é filho de Alexandre Tricai, proprietário da Oficina Tricai. A relação familiar facilitou o contato com o estabelecimento e a obtenção de informações sobre seu funcionamento. Entretanto, os requisitos do projeto foram definidos a partir das informações fornecidas pelo proprietário, das evidências reunidas e da análise realizada pelo grupo.
