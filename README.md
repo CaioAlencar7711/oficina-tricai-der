@@ -7,10 +7,10 @@
 | Nome completo | RGM | Usuário no GitHub |
 |---|---|---|
 | Caio Santos Alencar | 47052830 | CaioAlencar7711 |
-| Gabriel Tricai  | 47142014 | [PREENCHER] |
-| Italo Guilherme  | 47189771 | [PREENCHER] |
-| Ezequiel Soares | 47205521 | [PREENCHER] |
-| Davi de Souza | 47169826 | [PREENCHER] |
+| Gabriel Tricai  | 47142014 | gabtricai |
+| Italo Guilherme  | 47189771 | italonuneszx |
+| Ezequiel Soares | 47205521 | Ezequielsds |
+| Davi de Souza | 47169826 | davisouza1202-hub |
 
 ## Ferramentas e artefatos
 
@@ -477,23 +477,38 @@ Os arquivos separados de estrutura, dados, consultas e auditoria foram executado
 
 | Item | Registro |
 |---|---|
-| Ferramenta e etapa | Claude (Anthropic): revisão do DER a partir da correção do professor, definição do modelo lógico, conferência da conversão do brModelo, normalização e atualização do README |
-| Motivação | Responder cada apontamento da E1 e conferir o modelo antes da conversão |
-| Prompts e respostas | O grupo enviou os arquivos da E1, a correção do professor (issue), o PDF da E2, imagens e PDFs do DER conceitual e do lógico, e prints de conversas com a oficina. A IA devolveu listas de ajustes de cardinalidade, atributos e entidades, o texto de regras e processos, e esta versão do README |
-| Fontes verificadas | Correção do professor, material da disciplina e conversas com Gabriel Tricai sobre compras e nota fiscal. A IA não teve acesso à oficina |
-| Trechos rejeitados ou corrigidos | (1) A IA leu a cardinalidade de PAGAMENTO ao contrário na primeira análise e corrigiu em seguida. (2) Sugeriu uma tabela N:N entre OS e MECANICO e uma entidade genérica ITEM_OS; o grupo descartou ambas porque contradiziam o levantamento (um mecânico por OS) e o README (peças e serviços em estruturas separadas). (3) Sugeriu atributos em maiúsculas, em conflito com os prefixos pedidos pelo professor. (4) Leu o (mín,máx) pela convenção usual da literatura, mas o conversor do brModelo coloca a FK do lado (0,n); o grupo inverteu as cardinalidades e converteu de novo. (5) Contou uma entidade a mais no DER. (6) Sugeriu ORCAMENTO, que o grupo não incluiu porque a oficina não trabalha com orçamento |
-| Justificativa da escolha final | O grupo manteve as sugestões que bateram com o levantamento e com o que o conversor do brModelo gerou, e rejeitou as que não bateram |
-| Reflexão crítica | A IA acertou o desenho geral, mas errou detalhes que só aparecem ao confrontar com a ferramenta e com a oficina: a leitura das cardinalidades, entidades que o levantamento não sustentava e uma contagem. Mensagens dos colegas valem menos que a entrevista com o proprietário, e o grupo precisa validar cada afirmação (nota fiscal, garantia, conta assinada) diretamente com a oficina |
+| **Ferramentas utilizadas** | Claude (Anthropic) e ChatGPT (OpenAI). |
+| **Etapas de utilização** | Apoio na revisão dos modelos conceitual e lógico, esclarecimento de dúvidas sobre cardinalidades, normalização, restrições SQL e organização da documentação. |
+| **Motivação** | Conferir a consistência entre os requisitos levantados na entrevista, os diagramas desenvolvidos pelo grupo e a implementação do banco de dados. |
+| **Exemplos de prompts** | "Analise nosso DER e identifique possíveis inconsistências nas cardinalidades." / "Confira se as chaves primárias e estrangeiras estão corretamente representadas no modelo lógico." / "Explique a causa deste erro no MySQL e indique como podemos corrigi-lo." / "Compare nosso README com os requisitos da Entrega 2 e aponte possíveis pendências." |
+| **Fontes de validação** | Entrevista com os responsáveis pela oficina, orientações do professor, material da disciplina, diagramas produzidos pelo grupo e testes realizados no MySQL Workbench. |
+| **Decisões do grupo** | A definição das entidades e dos relacionamentos considerou o funcionamento da oficina. O grupo optou por representar o retorno por garantia por meio de um autorrelacionamento em ORDEM_SERVICO e manter o controle de compras e fornecedores como uma proposta de melhoria. |
+| **Verificação dos resultados** | As sugestões foram comparadas com os requisitos do projeto. Os scripts SQL foram executados em ambiente de teste, permitindo identificar e corrigir problemas de sintaxe e restrições. |
+| **Reflexão crítica** | As ferramentas auxiliaram na revisão técnica e na identificação de inconsistências, mas suas respostas foram utilizadas como referência, e não como fonte definitiva. A validação das regras de negócio e a escolha das soluções consideraram as informações levantadas pelo grupo e os resultados dos testes. |
+
+**Conclusão:** a
 
 
-**Uso adicional de ChatGPT na Entrega 2 (a validar pelo grupo)**
+### Uso adicional do ChatGPT na Entrega 2
 
-O ChatGPT foi utilizado como apoio à revisão das restrições SQL, identificação de erros de sintaxe no MySQL Workbench, testes em banco isolado e organização do script unificado. Entre as interações estiveram pedidos para corrigir as tabelas AGENDAMENTO e PAGAMENTO, adicionar CHECK de estoque e quantidade, e organizar os arquivos SQL.
+Durante a segunda entrega, utilizamos o ChatGPT como ferramenta de apoio para revisar a modelagem do banco de dados, esclarecer dúvidas sobre SQL e identificar possíveis inconsistências entre os diagramas e a implementação no MySQL.
 
-**Validação realizada:** o grupo executou os arquivos separados no MySQL Workbench e verificou consultas e auditorias. O teste integral do arquivo unificado ainda deve ser confirmado.
+**Exemplos de prompts utilizados:**
 
-**Reflexão crítica:** algumas sugestões iniciais de SQL precisaram ser corrigidas após mensagens de erro do MySQL. A execução real do código e a comparação com as regras da oficina foram indispensáveis. Antes da entrega, o grupo deve conferir e complementar os prompts exatos, conforme exigido pelo professor.
+- "Analise nosso DER e o modelo lógico, verificando se as cardinalidades estão coerentes com as regras de negócio levantadas na entrevista."
+- "Revise as restrições das tabelas AGENDAMENTO e PAGAMENTO e explique quais ajustes são necessários para manter a integridade dos dados."
+- "Identifique possíveis erros no nosso script SQL, mas explique o motivo das correções para que possamos realizá-las."
+- "Compare o dicionário de dados com a estrutura SQL e indique atributos ou tipos que estejam diferentes."
 
+**Validação realizada:**
+
+As sugestões recebidas foram analisadas pelo grupo antes de serem aplicadas. Durante a implementação, encontramos erros de sintaxe e restrições que precisaram ser corrigidos manualmente. Para verificar o funcionamento do banco, executamos os scripts de estrutura, inserção de dados, consultas e auditorias no MySQL Workbench, utilizando um banco de testes separado.
+
+**Reflexão crítica:**
+
+O ChatGPT contribuiu principalmente para esclarecer dúvidas e identificar problemas que não havíamos percebido inicialmente. Entretanto, nem todas as sugestões funcionaram corretamente na primeira tentativa, sendo necessário revisar o código e realizar novos testes. As decisões sobre as entidades, os relacionamentos e as regras de negócio foram tomadas considerando as informações obtidas na entrevista com a oficina e os requisitos estabelecidos pelo professor.
+
+A utilização da IA não substituiu a análise e a validação do grupo, mas serviu como suporte durante o desenvolvimento e a revisão do projeto.
 ---
 
 ## Conclusão
