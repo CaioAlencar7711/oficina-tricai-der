@@ -120,7 +120,7 @@ Pagamento (dinheiro, PIX, débito, crédito em até 4x, cheque ou conta assinada
 Emissão da nota fiscal
 ```
 
-[![Fluxograma do atendimento e reparo](diagramas/fluxograma-atendimento.svg)](diagramas/fluxograma-atendimento.svg)
+[![Fluxograma do atendimento e reparo](diagramas/fluxograma-atendimento.png)](diagramas/fluxograma-atendimento.png)
 
 **Processos fora do escopo, com justificativa**
 
