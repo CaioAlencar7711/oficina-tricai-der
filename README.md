@@ -83,7 +83,7 @@ Texto completo em [`levantamento.md`](levantamento.md). Resumo:
 
 ---
 
-	#### Processos de Negócio
+**Processos de Negócio**
 
 | # | Processo | Hoje | Proposto pelo sistema |
 |---|---|---|---|
@@ -347,6 +347,16 @@ Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receb
 
 **Decisões gerais:** o cliente é obtido pelo veículo (sem `id_cliente` em AGENDAMENTO ou ORDEM_SERVICO); o orçamento não foi modelado (seção 2); compras e fornecedores entram como melhoria proposta, já que a oficina compra peças sem registrar; `estoque_minimo` só é aplicado às peças com `mantida_em_estoque` verdadeiro.
 
+ ####Delimitação do escopo do projeto
+
+O projeto tem como objetivo desenvolver a modelagem e a implementação de um banco de dados para apoiar a organização das informações da Oficina Tricai.
+
+Nesta entrega, foram desenvolvidas estruturas para o cadastro de clientes, veículos, mecânicos, agendamentos, ordens de serviço, serviços realizados, peças, pagamentos, fornecedores e compras. Também foram elaboradas consultas SQL para acompanhar as operações e obter informações gerenciais.
+
+Algumas funcionalidades identificadas durante o levantamento de requisitos, como alertas automáticos de estoque, emissão de notas fiscais e interfaces para utilização pelos funcionários, não fazem parte da implementação atual. Essas funcionalidades foram consideradas possibilidades de evolução do sistema.
+
+Dessa forma, o projeto concentra-se na estruturação, no armazenamento e na consulta dos dados, sem representar um sistema completo de gestão já disponível para uso na oficina.
+
 ---
 
 	### 1.6 Proposta de BI e IA
@@ -459,7 +469,7 @@ Os arquivos separados de estrutura, dados, consultas e auditoria foram executado
 
 ## 4. Dicionário de Dados
 
-[`dicionario-dados.html`](dicionario-dados.html) — dicionário das 13 tabelas, com atributos, tipos, nulidade, chaves e relacionamentos. A versão revisada deve ser publicada com o mesmo nome indicado neste link.
+[`dicionario-dados.html`](dicionario-dados.html) — dicionário das 13 tabelas, com atributos, tipos, nulidade, chaves e relacionamentos. 
 
 ---
 
