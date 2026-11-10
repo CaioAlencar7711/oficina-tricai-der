@@ -22,7 +22,7 @@
 | Modelo lógico | [`diagramas/modelo-logico-oficina-tricai.png`](diagramas/modelo-logico-oficina-tricai.png) |
 | Dicionário de dados | [`dicionario-dados.html`](dicionario-dados.html) |
 | Levantamento | [`levantamento.md`](levantamento.md) |
-| Script SQL e massa de dados | [`docs/`](docs/) [PREENCHER nome do arquivo `.sql`] |
+| Script SQL e massa de dados | [`docs/script.sql`](docs/script.sql) — script unificado; scripts separados disponíveis em `docs/` |
 
 ---
 
@@ -98,6 +98,8 @@ Texto completo em [`levantamento.md`](levantamento.md). Resumo:
 | 9 | Controle de estoque | Só itens de revisão e pastilhas ficam em estoque, sem controle de quantidade | Saldo por peça, baixa por OS e alerta abaixo do mínimo *(melhoria proposta)* |
 | 10 | Garantia e retorno | Consulta às notas fiscais para identificar os serviços realizados anteriormente no veículo | OS de retorno vinculada à OS original |
 
+**Limite da implementação:** embora a entrevista mencione cheque e conta assinada, o CHECK atual de `PAGAMENTO.forma_pagamento` aceita apenas dinheiro, PIX, débito e crédito. Conta assinada sem quitação é representada pela ausência de pagamento; cheque ainda não é aceito pelo CHECK.
+
 **Fluxo principal (atendimento e reparo):**
 
 ```
@@ -127,7 +129,7 @@ Emissão da nota fiscal
 
 ---
 
-## 3. Requisitos do sistema
+#### Requisitos do sistema
 
 	#### Requisitos do Sistema
 
@@ -205,13 +207,13 @@ O DER tem **10 entidades** (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVI
 | EXECUTA | MECANICO (1,1) | ORDEM_SERVICO (0,n) | Uma OS tem um mecânico responsável; um mecânico executa várias OS |
 | RECEBE | ORDEM_SERVICO (1,1) | PAGAMENTO (0,1) | Um pagamento é de uma OS; uma OS tem no máximo um pagamento (conta assinada ainda não paga não tem) |
 | FORNECE | FORNECEDOR (1,1) | COMPRA (0,n) | Uma compra tem um fornecedor; um fornecedor tem várias compras |
-| RETORNO_DE | ORDEM_SERVICO (autorrelacionamento) | ORDEM_SERVICO | Uma OS de retorno refere-se a no máximo uma OS original; uma OS original pode ter vários retornos |
+| RETORNO_DE | ORDEM_SERVICO (autorrelacionamento) | ORDEM_SERVICO | Uma OS de retorno refere-se a no máximo uma OS original; uma OS original pode gerar no máximo um retorno |
 
 | Entidade associativa | Liga | Cardinalidades | Atributos próprios |
 |---|---|---|---|
 | UTILIZA | ORDEM_SERVICO e PECA | (0,n) e (0,n) | `quantidade`, `valor_unitario` (preço praticado na OS) |
 | REALIZA | ORDEM_SERVICO e SERVICO | (0,n) e (0,n) | `valor_cobrado` |
-| CONTEM | COMPRA e PECA | COMPRA (0,n) e PECA (1,n) | `quantidade`, `valor_unitario` (preço pago na compra) |
+| CONTEM | COMPRA e PECA | COMPRA (1,n) e PECA (0,n) — mínimo de uma peça por compra é regra de negócio auditada, não garantida somente pela FK | `quantidade`, `valor_custo` (preço pago na compra) |
 
 	#### Correções da Entrega 1
 
@@ -231,11 +233,11 @@ O DER tem **10 entidades** (CLIENTE, VEICULO, MECANICO, AGENDAMENTO, ORDEM_SERVI
 | Garantia e retorno ausentes | Criado RETORNO_DE (RN14, RF15) | Retorno gera nova OS vinculada à original |
 | Nota fiscal ausente | Atributo `numero_nota_fiscal` em ORDEM_SERVICO e RN17 | A oficina emite nota e o número precisa ficar ligado à OS |
 | Processos e regras incompletos | Seções 2 e 4 ampliadas (compras, estoque, garantia, nota fiscal, conta assinada, LGPD) | Cobrem o que a oficina faz |
-| Dicionário só com tabelas de atributos | [PENDENTE: refazer `dicionario-dados.html`] | Atender os itens obrigatórios do dicionário |
-| Nomes abreviados e sem RGM | tabela de integrantes preenchida] | Identificação dos integrantes |
+| Dicionário só com tabelas de atributos | Dicionário revisado em `dicionario-dados.html`, a ser conferido contra a versão final do SQL | Atender os itens obrigatórios do dicionário |
+| Nomes abreviados e sem RGM | tabela de integrantes com nomes e RGM; usuários GitHub ainda pendentes | Identificação dos integrantes |
 | Possível conflito de interesse | Gabriel Tricai é filho de Alexandre Tricai, proprietário da oficina. O vínculo familiar foi declarado na caracterização da organização. | Transparência atendida |
 | Seções copiadas do esqueleto | Removidas (critérios atitudinais e resumo de pesos) | Não fazem parte do relatório |
-| Uso de IA | Seção 13 atualizada | Uso de IA deve ser declarado |
+| Uso de IA | Seção 5 atualizada | Uso de IA deve ser declarado |
 
 ---
 
@@ -321,7 +323,7 @@ Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receb
 
 **Chaves primárias:** todas as entidades usam um identificador numérico sequencial (`id_...`). As tabelas associativas usam PK composta formada pelas duas FKs, o que impede repetir a mesma peça na mesma OS.
 
-**Chaves estrangeiras:** as FKs seguem a seção 6. Todas usam `ON DELETE RESTRICT`, para que o histórico não se perca ao apagar um cliente, veículo ou peça (RN06).
+**Chaves estrangeiras:** as FKs seguem a seção 6. As FKs não declaram `ON DELETE RESTRICT` explicitamente; aplica-se a ação restritiva padrão do MySQL, para que o histórico não se perca ao apagar um cliente, veículo ou peça (RN06).
 
 **Restrições**
 
@@ -337,9 +339,9 @@ Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receb
 | NOT NULL | `id_fornecedor` em COMPRA | RN15 |
 | Opcional (aceita nulo) | `id_os` em AGENDAMENTO, `id_os_original`, `numero_nota_fiscal`, `data_fechamento` | RN03, RN14, RN17 |
 | CHECK | `numero_parcelas` entre 1 e 4 e só quando a forma de pagamento é crédito | RN04 |
-| CHECK | `forma_pagamento` em dinheiro, PIX, débito, crédito, cheque ou conta assinada | RF05 |
+| CHECK | `forma_pagamento` em dinheiro, PIX, débito ou crédito (incluindo variações de grafia aceitas) | RF05 — implementação atual |
 | CHECK | `quantidade_estoque` ≥ 0; `quantidade` > 0 em UTILIZA e CONTEM | RN05 |
-| CHECK | valores de `status` válidos | RF02, RF03 |
+| Validação pendente | valores de `status` válidos | RF02, RF03 — não há CHECK de status implementado |
 
 **Tipos:** `INT` para identificadores e quantidades; `VARCHAR` para texto, inclusive `cpf_cnpj`, `cep` e `telefone` (zeros à esquerda importam e ninguém soma esses valores); `DATE` e `TIME` para datas e horários; `DECIMAL(10,2)` para valores em reais; `BOOLEAN` para `mantida_em_estoque`.
 
@@ -348,8 +350,6 @@ Nos relacionamentos opcionais, as respectivas chaves estrangeiras poderão receb
 ---
 
 	### 1.6 Proposta de BI e IA
-
-### 1.6 Proposta de BI e IA
 
 As consultas gerenciais foram desenvolvidas para transformar os dados registrados pela oficina em informações úteis para acompanhamento operacional e tomada de decisão.
 
@@ -387,7 +387,7 @@ As consultas de auditoria verificam a integridade dos registros e a conformidade
 
 As aplicações de IA são propostas para futuras expansões do sistema, não funcionalidades implementadas nesta entrega.
 
-	## 2. Modelo Lógico
+## 2. Modelo Lógico
 
 ![Modelo lógico da Oficina Alexandre Tricai](diagramas/modelo-logico-oficina-tricai.png)
 
@@ -429,8 +429,6 @@ PAGAMENTO (id_pagamento PK, data_pagamento, valor, forma_pagamento,
 ---
 
 
-	## 3. Script SQL
-
 ## 3. Script SQL
 
 O banco de dados foi implementado em MySQL 8, com scripts organizados por etapa para facilitar a criação, alimentação, consulta e auditoria das informações da oficina.
@@ -443,23 +441,25 @@ O banco de dados foi implementado em MySQL 8, com scripts organizados por etapa 
 | `02_dados.sql` | Inserção da massa de dados fictícia utilizada nos testes. |
 | `03_consultas.sql` | Consultas operacionais e oito consultas gerenciais identificadas de G01 a G08. |
 | `04_auditoria.sql` | Sete consultas de auditoria identificadas de A01 a A07, relacionadas às regras de negócio. |
+| `docs/script.sql` | Script unificado com estrutura, massa de dados, consultas, UPDATE/DELETE e auditorias, para execução em banco vazio. |
 
 **Ordem de execução**
 
-1. Executar `01_estrutura.sql` para criar o banco e suas tabelas.
-2. Executar `02_dados.sql` para inserir os registros de teste.
-3. Executar `03_consultas.sql` para visualizar as informações operacionais e gerenciais.
-4. Executar `04_auditoria.sql` para verificar possíveis inconsistências nos registros.
+1. Em um banco vazio, executar `docs/script.sql` para reproduzir a implementação completa. Como alternativa, executar os arquivos separados na ordem abaixo.
+2. Executar `01_estrutura.sql` para criar o banco e suas tabelas.
+3. Executar `02_dados.sql` para inserir os registros de teste.
+4. Executar `03_consultas.sql` para visualizar as informações operacionais e gerenciais.
+5. Executar `04_auditoria.sql` para verificar possíveis inconsistências nos registros.
 
 **Massa de dados e validação**
 
 A massa de dados utilizada é fictícia e contempla diferentes situações operacionais, incluindo clientes sem ordens de serviço, ordens em andamento, ordens concluídas, retornos, pagamentos e registros utilizados para demonstrar o funcionamento das auditorias.
 
-As consultas foram executadas no MySQL Workbench, utilizando o banco `oficina_tricai`.
+Os arquivos separados de estrutura, dados, consultas e auditoria foram executados no MySQL Workbench em banco de teste. A execução integral do script unificado ainda requer confirmação.
 
-	## 4. Dicionário de Dados
+## 4. Dicionário de Dados
 
-[`dicionario-dados.html`](dicionario-dados.html) [PENDENTE: atualizar para o modelo atual, com as entidades novas e os itens obrigatórios].
+[`dicionario-dados.html`](dicionario-dados.html) — dicionário das 13 tabelas, com atributos, tipos, nulidade, chaves e relacionamentos. A versão revisada deve ser publicada com o mesmo nome indicado neste link.
 
 ---
 
@@ -485,11 +485,20 @@ As consultas foram executadas no MySQL Workbench, utilizando o banco `oficina_tr
 | Justificativa da escolha final | O grupo manteve as sugestões que bateram com o levantamento e com o que o conversor do brModelo gerou, e rejeitou as que não bateram |
 | Reflexão crítica | A IA acertou o desenho geral, mas errou detalhes que só aparecem ao confrontar com a ferramenta e com a oficina: a leitura das cardinalidades, entidades que o levantamento não sustentava e uma contagem. Mensagens dos colegas valem menos que a entrevista com o proprietário, e o grupo precisa validar cada afirmação (nota fiscal, garantia, conta assinada) diretamente com a oficina |
 
+
+**Uso adicional de ChatGPT na Entrega 2 (a validar pelo grupo)**
+
+O ChatGPT foi utilizado como apoio à revisão das restrições SQL, identificação de erros de sintaxe no MySQL Workbench, testes em banco isolado e organização do script unificado. Entre as interações estiveram pedidos para corrigir as tabelas AGENDAMENTO e PAGAMENTO, adicionar CHECK de estoque e quantidade, e organizar os arquivos SQL.
+
+**Validação realizada:** o grupo executou os arquivos separados no MySQL Workbench e verificou consultas e auditorias. O teste integral do arquivo unificado ainda deve ser confirmado.
+
+**Reflexão crítica:** algumas sugestões iniciais de SQL precisaram ser corrigidas após mensagens de erro do MySQL. A execução real do código e a comparação com as regras da oficina foram indispensáveis. Antes da entrega, o grupo deve conferir e complementar os prompts exatos, conforme exigido pelo professor.
+
 ---
 
-	## Conclusão
+## Conclusão
 
-A partir da visita à Oficina Alexandre Tricai, o grupo modelou os dados de uma oficina mecânica especializada em vans Mercedes-Benz Sprinter CDI e levou o modelo do DER conceitual até o banco em MySQL. O modelo resolve os problemas P1 a P6: cadastro único de clientes e veículos, histórico por veículo, controle de estoque com entrada por compra e baixa por OS, agendamento com mecânico e registro de compras e fornecedores.
+A partir da visita à Oficina Alexandre Tricai, o grupo modelou os dados de uma oficina mecânica especializada em vans Mercedes-Benz Sprinter CDI e levou o modelo do DER conceitual até o banco em MySQL. O modelo propõe soluções para os problemas P1 a P6: cadastro único de clientes e veículos, histórico por veículo, registro de estoque, compras e consumo de peças, agendamento com mecânico e registro de compras e fornecedores.
 
 Aprendizados: o formulário impresso da OS não previa PIX nem parcelamento, o que só apareceu ao cruzar o documento com a entrevista; e a ferramenta de conversão do brModelo interpretou as cardinalidades de forma diferente da leitura usual, o que obrigou o grupo a conferir o modelo lógico gerado em vez de aceitá-lo. 
 
