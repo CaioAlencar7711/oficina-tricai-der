@@ -22,7 +22,8 @@
 | Modelo lógico | [`diagramas/modelo-logico-oficina-tricai.png`](diagramas/modelo-logico-oficina-tricai.png) |
 | Dicionário de dados | [`dicionario-dados.html`](dicionario-dados.html) |
 | Levantamento | [`levantamento.md`](levantamento.md) |
-| Script SQL e massa de dados | [`docs/script.sql`](docs/script.sql) — script unificado; scripts separados disponíveis em `docs/` |
+| Scripts SQL | [`01_estrutura.sql`](docs/01_estrutura.sql) — estrutura do banco, restrições, consultas operacionais, gerenciais e auditorias; [`02_dados.sql`](docs/02_dados.sql) — massa de dados fictícia. |
+  
 
 ---
 
@@ -85,18 +86,20 @@ Texto completo em [`levantamento.md`](levantamento.md). Resumo:
 
 **Processos de Negócio**
 
-| # | Processo | Hoje | Proposto pelo sistema |
-|---|---|---|---|
-| 1 | Cadastro de cliente e veículo | Refeito em talão de papel a cada OS | Cadastro único, reaproveitado em todas as OS |
-| 2 | Agendamento | WhatsApp/telefone, sem registro | Agendamento registrado com veículo e mecânico |
-| 3 | Atendimento e diagnóstico | Mecânico disponível diagnostica | Igual, com OS ligada ao agendamento quando houver |
-| 4 | Execução do reparo | Usa peça do estoque ou providencia a peça | Peça de estoque dá baixa na OS; peça sob demanda é comprada, registrada e usada |
-| 5 | Abertura e fechamento da OS | Talão de papel com cliente, veículo, itens e produtos | OS registra cliente (via veículo), mecânico, serviços e peças |
-| 6 | Pagamento | Dinheiro, PIX, débito, crédito (até 4x), cheque ou conta assinada | Pagamento registrado e ligado à OS |
-| 7 | Emissão de nota fiscal | A oficina emite a nota (fora do sistema) | Número da nota registrado na OS |
-| 8 | Compra de peças e recebimento | Compra normalmente na Rodobens, sem registro | Cadastro de fornecedor, registro da compra e entrada no estoque *(melhoria proposta)* |
-| 9 | Controle de estoque | Só itens de revisão e pastilhas ficam em estoque, sem controle de quantidade | Saldo por peça, baixa por OS e alerta abaixo do mínimo *(melhoria proposta)* |
-| 10 | Garantia e retorno | Consulta às notas fiscais para identificar os serviços realizados anteriormente no veículo | OS de retorno vinculada à OS original |
+| Código | Processo | Hoje | Proposto pelo sistema | Regras de negócio relacionadas |
+|---|---|---|---|---|
+| PR01 | Cadastro de cliente e veículo | Refeito em talão de papel a cada OS | Cadastro único, reaproveitado em todas as OS | RN01, RN06 |
+| PR02 | Agendamento | WhatsApp/telefone, sem registro | Agendamento registrado com veículo e mecânico | RN02, RN03, RN10, RN11 |
+| PR03 | Atendimento e diagnóstico | Mecânico disponível diagnostica | Igual, com OS ligada ao agendamento quando houver | RN03, RN07 |
+| PR04 | Execução do reparo | Usa peça do estoque ou providencia a peça | Peça de estoque dá baixa na OS; peça sob demanda é comprada, registrada e usada | RN05, RN08, RN09, RN13 |
+| PR05 | Abertura e fechamento da OS | Talão de papel com cliente, veículo, itens e produtos | OS registra cliente (via veículo), mecânico, serviços e peças | RN01, RN07, RN08 |
+| PR06 | Pagamento | Dinheiro, PIX, débito, crédito (até 4x), cheque ou conta assinada | Pagamento registrado e ligado à OS | RN04, RN12 |
+| PR07 | Emissão de nota fiscal | A oficina emite a nota (fora do sistema) | Número da nota registrado na OS | RN17 |
+| PR08 | Compra de peças e recebimento | Compra normalmente na Rodobens, sem registro | Cadastro de fornecedor, registro da compra e entrada no estoque *(melhoria proposta)* | RN13, RN15, RN16 |
+| PR09 | Controle de estoque | Só itens de revisão e pastilhas ficam em estoque, sem controle de quantidade | Saldo por peça, baixa por OS e alerta abaixo do mínimo *(melhoria proposta)* | RN05, RN09 |
+| PR10 | Garantia e retorno | Consulta às notas fiscais para identificar os serviços realizados anteriormente no veículo | OS de retorno vinculada à OS original | RN14, RN19 |
+
+Os processos de negócio foram identificados pelos códigos **PR01 a PR10** e relacionados às regras de negócio (**RN**) correspondentes, permitindo rastrear as regras aplicáveis a cada atividade da oficina.
 
 **Limite da implementação:** embora a entrevista mencione cheque e conta assinada, o CHECK atual de `PAGAMENTO.forma_pagamento` aceita apenas dinheiro, PIX, débito e crédito. Conta assinada sem quitação é representada pela ausência de pagamento; cheque ainda não é aceito pelo CHECK.
 
@@ -439,33 +442,29 @@ PAGAMENTO (id_pagamento PK, data_pagamento, valor, forma_pagamento,
 ---
 
 
+
 ## 3. Script SQL
 
-O banco de dados foi implementado em MySQL 8, com scripts organizados por etapa para facilitar a criação, alimentação, consulta e auditoria das informações da oficina.
+O banco de dados foi desenvolvido em MySQL 8. Os scripts SQL foram organizados em dois arquivos, separando a estrutura e as consultas da massa de dados utilizada para os testes.
 
 **Arquivos SQL**
 
 | Arquivo | Descrição |
 |---|---|
-| `01_estrutura.sql` | Criação do banco de dados, tabelas, chaves primárias, chaves estrangeiras e restrições. |
-| `02_dados.sql` | Inserção da massa de dados fictícia utilizada nos testes. |
-| `03_consultas.sql` | Consultas operacionais e oito consultas gerenciais identificadas de G01 a G08. |
-| `04_auditoria.sql` | Sete consultas de auditoria identificadas de A01 a A07, relacionadas às regras de negócio. |
-| `docs/script.sql` | Script unificado com estrutura, massa de dados, consultas, UPDATE/DELETE e auditorias, para execução em banco vazio. |
+| `01_estrutura.sql` | Criação do banco de dados, 13 tabelas, chaves primárias, chaves estrangeiras, restrições de integridade, 7 consultas operacionais, 8 consultas gerenciais e 7 consultas de auditoria. |
+| `02_dados.sql` | Inserção da massa de dados fictícia utilizada para simular as operações da oficina. |
 
 **Ordem de execução**
 
-1. Em um banco vazio, executar `docs/script.sql` para reproduzir a implementação completa. Como alternativa, executar os arquivos separados na ordem abaixo.
-2. Executar `01_estrutura.sql` para criar o banco e suas tabelas.
-3. Executar `02_dados.sql` para inserir os registros de teste.
-4. Executar `03_consultas.sql` para visualizar as informações operacionais e gerenciais.
-5. Executar `04_auditoria.sql` para verificar possíveis inconsistências nos registros.
+1. Executar a parte de criação do banco e das tabelas presente no `01_estrutura.sql`.
+2. Executar `02_dados.sql` para inserir os registros fictícios.
+3. Executar as seções de consultas operacionais, gerenciais e auditorias presentes no `01_estrutura.sql`, após a inserção dos dados.
 
 **Massa de dados e validação**
 
 A massa de dados utilizada é fictícia e contempla diferentes situações operacionais, incluindo clientes sem ordens de serviço, ordens em andamento, ordens concluídas, retornos, pagamentos e registros utilizados para demonstrar o funcionamento das auditorias.
 
-Os arquivos separados de estrutura, dados, consultas e auditoria foram executados no MySQL Workbench em banco de teste. A execução integral do script unificado ainda requer confirmação.
+Os scripts de estrutura, inserção de dados, consultas e auditorias foram testados separadamente no MySQL Workbench. A execução da versão consolidada em dois arquivos ainda precisa ser confirmada.
 
 ## 4. Dicionário de Dados
 
